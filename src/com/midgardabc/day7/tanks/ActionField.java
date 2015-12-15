@@ -1,20 +1,13 @@
 package com.midgardabc.day7.tanks;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
 import com.midgardabc.day7.tanks.bf.BFObject;
 import com.midgardabc.day7.tanks.bf.BattleField;
 import com.midgardabc.day7.tanks.bf.Blank;
 import com.midgardabc.day7.tanks.bf.tanks.Action;
-import com.midgardabc.day7.tanks.bf.tanks.BT7;
-import com.midgardabc.day7.tanks.bf.tanks.Bullet;
-import com.midgardabc.day7.tanks.bf.tanks.T34;
-import com.midgardabc.day7.tanks.bf.tanks.Tank;
-import com.midgardabc.day7.tanks.bf.tanks.Tiger;
+import com.midgardabc.day7.tanks.bf.tanks.*;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Updated to object oriented style.
@@ -199,11 +192,11 @@ public class ActionField extends JPanel {
 		aggressor = new BT7(battleField,
 			Integer.parseInt(location.split("_")[1]), Integer.parseInt(location.split("_")[0]), Direction.RIGHT);
 
-		bullet = new Bullet(-100, -100, Direction.NONE);
+		bullet = new Bullet(-100, -100, Direction.NONE, new T34(battleField));
 
 		JFrame frame = new JFrame("BATTLE FIELD, DAY 7");
 		frame.setLocation(750, 150);
-		frame.setMinimumSize(new Dimension(battleField.getBfWidth(), battleField.getBfHeight() + 22));
+		frame.setMinimumSize(new Dimension(battleField.getBfWidth()+ 16, battleField.getBfHeight() + 38));
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.getContentPane().add(this);
 		frame.pack();

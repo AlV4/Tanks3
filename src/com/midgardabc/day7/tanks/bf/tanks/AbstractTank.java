@@ -1,9 +1,9 @@
 package com.midgardabc.day7.tanks.bf.tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import com.midgardabc.day7.tanks.Direction;
 import com.midgardabc.day7.tanks.bf.BattleField;
+
+import java.awt.*;
 
 public abstract class AbstractTank implements Tank {
 	
@@ -23,6 +23,8 @@ public abstract class AbstractTank implements Tank {
 	
 	protected Color tankColor;
 	protected Color towerColor;
+	private int barrelWidth = 11;
+	private int barrelHeight = 40;
 	
 	public AbstractTank(BattleField bf) {
 		this(bf, 128, 512, Direction.UP);
@@ -59,7 +61,7 @@ public abstract class AbstractTank implements Tank {
 			bulletX = x + 64;
 			bulletY = y + 25;
 		}
-		return new Bullet(bulletX, bulletY, direction);
+		return new Bullet(bulletX, bulletY, direction, this);
 	}
 	
 	public void draw(Graphics g) {
@@ -69,14 +71,15 @@ public abstract class AbstractTank implements Tank {
 	
 			g.setColor(towerColor);
 			if (this.getDirection() == Direction.UP) {
-				g.fillRect(this.getX() + 20, this.getY(), 24, 34);
+				g.fillRect(getX() + 27, getY() - 10, barrelWidth, barrelHeight);
 			} else if (this.getDirection() == Direction.DOWN) {
-				g.fillRect(this.getX() + 20, this.getY() + 30, 24, 34);
+				g.fillRect(getX() + 27, getY() + 34, barrelWidth, barrelHeight);
 			} else if (this.getDirection() == Direction.LEFT) {
-				g.fillRect(this.getX(), this.getY() + 20, 34, 24);
+				g.fillRect(getX() - 10, getY() + 27, barrelHeight, barrelWidth);
 			} else {
-				g.fillRect(this.getX() + 30, this.getY() + 20, 34, 24);
+				g.fillRect(getX() + 34, getY() + 27, barrelHeight, barrelWidth);
 			}
+			g.fillOval(getX() + 12, getY() + 12, 40, 40);
 		}
 	}
 	
@@ -120,6 +123,10 @@ public abstract class AbstractTank implements Tank {
 	
 	public int getSpeed() {
 		return speed;
+	}
+
+	public Color getTowerColor(){
+		return towerColor;
 	}
 	
 	@Override

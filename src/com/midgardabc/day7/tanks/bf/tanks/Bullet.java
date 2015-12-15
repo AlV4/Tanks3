@@ -1,11 +1,10 @@
 package com.midgardabc.day7.tanks.bf.tanks;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 import com.midgardabc.day7.tanks.Direction;
 import com.midgardabc.day7.tanks.bf.Destroyable;
 import com.midgardabc.day7.tanks.bf.Drawable;
+
+import java.awt.*;
 
 public class Bullet implements Drawable, Destroyable {
 
@@ -14,14 +13,17 @@ public class Bullet implements Drawable, Destroyable {
 	private int x;
 	private int y;
 	private Direction direction;
+	private int caliber = 10;
+	public AbstractTank autor;
 
 	private boolean destroyed;
 
-	public Bullet(int x, int y, Direction direction) {
+	public Bullet(int x, int y, Direction direction, AbstractTank autor) {
 		this.x = x;
 		this.y = y;
 		this.direction = direction;
 		this.destroyed = false;
+		this.autor = autor;
 	}
 
 	public void updateX(int x) {
@@ -35,8 +37,8 @@ public class Bullet implements Drawable, Destroyable {
 	@Override
 	public void draw(Graphics g) {
 		if (!destroyed) {
-			g.setColor(new Color(255, 255, 0));
-			g.fillRect(this.x, this.y, 14, 14);
+			g.setColor(autor.getTowerColor());
+			g.fillOval(getX(), getY(), caliber, caliber);
 		}
 	}
 	
