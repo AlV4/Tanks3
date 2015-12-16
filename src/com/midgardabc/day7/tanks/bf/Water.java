@@ -6,6 +6,6 @@ public class Water extends SimpleBFObject {
 	
 	public Water(int x, int y) {
 		super(x, y);
-		color = new Color(0, 0, 255);
+		color = new Color(144, 149, 255);
 	}
 }

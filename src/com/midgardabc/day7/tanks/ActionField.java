@@ -50,7 +50,7 @@ public class ActionField extends JPanel {
 		repaint();
 	}
 
-	private void processMove(Tank tank) throws Exception {
+	private void 	processMove(Tank tank) throws Exception {
 		processTurn(tank);
 		Direction direction = tank.getDirection();
 		int step = 1;

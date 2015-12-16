@@ -18,10 +18,10 @@ public class BattleField implements Drawable {
 			{"B", "B", "B", " ", "B", " ", "B", "B", "B"},
 			{"B", "B", "B", " ", " ", " ", "B", "B", "B"},
 			{"B", "B", "B", " ", "B", " ", "B", "B", "B"},
-			{"B", "B", " ", "B", "B", "B", " ", "B", "B"},
+			{"B", "B", " ", "W", "W", "W", " ", "B", "B"},
 			{"B", "B", " ", " ", " ", " ", " ", "B", "B"},
 			{"B", " ", " ", "B", "B", "B", " ", " ", "B"},
-			{"B", " ", " ", "B", "B", "B", " ", " ", "B"}
+			{"B", " ", " ", "B", "E", "B", " ", " ", "R"}
 		};
 
 	private BFObject[][] battleField = new BFObject[9][9];
@@ -57,7 +57,7 @@ public class BattleField implements Drawable {
 					bfObject = new Rock(x, y);
 				} else if (obj.equals(EAGLE)) {
 					bfObject = new Eagle(x, y);
-				} else if (obj.equals(ROCK)) {
+				} else if (obj.equals(WATER)) {
 					bfObject = new Water(x, y);
 				} else {
 					bfObject = new Blank(x, y);
