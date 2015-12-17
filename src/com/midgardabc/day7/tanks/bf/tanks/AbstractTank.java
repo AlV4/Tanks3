@@ -6,6 +6,7 @@ import com.midgardabc.day7.tanks.bf.BattleField;
 import java.awt.*;
 
 public abstract class AbstractTank implements Tank {
+	public Tank enemyTank;
 	
 	private int speed = 10;
 	protected int movePath = 1;
@@ -113,6 +114,10 @@ public abstract class AbstractTank implements Tank {
 		return direction;
 	}
 
+	public void setDirection(Direction direction){
+		this.direction = direction;
+	}
+
 	public int getX() {
 		return x;
 	}
@@ -128,7 +133,19 @@ public abstract class AbstractTank implements Tank {
 	public Color getTowerColor(){
 		return towerColor;
 	}
-	
+
+	public int[] getEnemyPosition(){
+		int[]position = new int[2];
+		position[0] = enemyTank.getX()/64;
+		position[1] = enemyTank.getY()/64;
+		return position;
+	}
+
+	@Override
+	public void setEnemyTank(Tank tank) {
+		enemyTank = tank;
+	}
+
 	@Override
 	public int getMovePath() {
 		return movePath;

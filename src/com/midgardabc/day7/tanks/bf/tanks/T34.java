@@ -4,11 +4,12 @@ import com.midgardabc.day7.tanks.Direction;
 import com.midgardabc.day7.tanks.bf.BattleField;
 
 import java.awt.*;
+import java.util.Random;
 
 public class T34 extends AbstractTank {
 
     public T34(BattleField bf) {
-        super(bf, 0, 512, Direction.UP);
+        super(bf, 128, 512, Direction.UP);
         tankColor = new Color(0, 136, 255);
         towerColor = new Color(248, 255, 60);
     }
@@ -19,35 +20,20 @@ public class T34 extends AbstractTank {
         towerColor = new Color(248, 255, 60);
     }
 
-    private Object[] actions = new Object[]{
-            Direction.UP,
-            Action.MOVE,
-            Action.MOVE,
-            Action.FIRE,
+    private Action[] actions = new Action[]{
+
             Action.MOVE,
             Action.FIRE,
-            Action.FIRE,
-            Action.FIRE,
-            Action.MOVE,
-            Action.MOVE,
-            Action.MOVE,
-            Action.MOVE
+
     };
 
     private int step = 0;
 
     @Override
     public Action setUp() {
-        if (step >= actions.length) {
-            step = 0;
-        }
-        if (!(actions[step] instanceof Action)) {
-            turn((Direction) actions[step++]);
-        }
-        if (step >= actions.length) {
-            step = 0;
-        }
-        return (Action) actions[step++];
+        Direction[]dirs = Direction.values();
+        setDirection(dirs[new Random().nextInt(dirs.length)]);
+        return actions[new Random().nextInt(actions.length)];
     }
 
     @Override

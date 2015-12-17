@@ -58,10 +58,10 @@ public class ActionField extends JPanel {
 		for (int i = 0; i < tank.getMovePath(); i++) {
 			int covered = 0;
 
-            int[]tankCoordinates = getQuadrant(tank.getX(), tank.getY());
+            int[]tankQuadrantCoordinates = getQuadrant(tank.getX(), tank.getY());
 
-			int h = tankCoordinates[0];
-			int v = tankCoordinates[1];
+			int h = tankQuadrantCoordinates[0];
+			int v = tankQuadrantCoordinates[1];
 
 			// check limits x: 0, 513; y: 0, 513
 			if ((direction == Direction.UP && tank.getY() <= 0) || (direction == Direction.DOWN && tank.getY() >= 512)
@@ -82,7 +82,8 @@ public class ActionField extends JPanel {
 				h--;
 			}
 			BFObject bfobject = battleField.scanQuadrant(v, h);
-			if (!(bfobject instanceof Blank) && !bfobject.isDestroyed()) {
+
+			if (!(bfobject instanceof Blank) && !bfobject.isDestroyed() || h == tank.getEnemyPosition()[0] && v == tank.getEnemyPosition()[1]) {
 				System.out.println("[illegal move] direction: " + direction
 						+ " tankX: " + tank.getX() + ", tankY: " + tank.getY() + " " + tank.toString());
 				return;
@@ -195,7 +196,10 @@ public class ActionField extends JPanel {
 		aggressor = new BT7(battleField,
 			Integer.parseInt(location.split("_")[1]), Integer.parseInt(location.split("_")[0]), Direction.LEFT);
 
-		bullet = new Bullet(-100, -100, Direction.NONE, new T34(battleField));
+        defender.setEnemyTank(aggressor);
+        aggressor.setEnemyTank(defender);
+
+		bullet = new Bullet(-100, -100, Direction.DOWN, new T34(battleField));
 
 		JFrame frame = new JFrame("BATTLE FIELD, DAY 7");
 		frame.setLocation(750, 150);

@@ -4,6 +4,7 @@ import com.midgardabc.day7.tanks.Direction;
 import com.midgardabc.day7.tanks.bf.BattleField;
 
 import java.awt.*;
+import java.util.Random;
 
 public class BT7 extends AbstractTank {
 	
@@ -20,10 +21,20 @@ public class BT7 extends AbstractTank {
 		towerColor = new Color(255, 0, 0);
 		movePath = 1;
 	}
-	
+
+    private Action[] actions = new Action[]{
+
+            Action.MOVE,
+            Action.FIRE,
+
+    };
+
+
 	@Override
 	public Action setUp() {
-		return Action.MOVE;
+        Direction[]dirs = Direction.values();
+        setDirection(dirs[new Random().nextInt(dirs.length)]);
+        return actions[new Random().nextInt(actions.length)];
 	}
 
     @Override

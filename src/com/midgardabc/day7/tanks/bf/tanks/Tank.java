@@ -26,4 +26,7 @@ public interface Tank extends Drawable, Destroyable {
 	
 	public int getMovePath();
 
+	public void setEnemyTank(Tank tank);
+
+	public int[] getEnemyPosition();
 }
