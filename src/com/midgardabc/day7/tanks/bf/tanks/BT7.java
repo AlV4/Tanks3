@@ -18,11 +18,16 @@ public class BT7 extends AbstractTank {
 		super(bf, x, y, direction);
 		tankColor = new Color(0, 0, 0);
 		towerColor = new Color(255, 0, 0);
-		movePath = 2;
+		movePath = 1;
 	}
 	
 	@Override
 	public Action setUp() {
 		return Action.MOVE;
 	}
+
+    @Override
+    public String toString() {
+        return "BT7{aggressor}";
+    }
 }

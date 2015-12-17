@@ -50,7 +50,7 @@ public class ActionField extends JPanel {
 		repaint();
 	}
 
-	private void 	processMove(Tank tank) throws Exception {
+	private void processMove(Tank tank) throws Exception {
 		processTurn(tank);
 		Direction direction = tank.getDirection();
 		int step = 1;
@@ -58,23 +58,24 @@ public class ActionField extends JPanel {
 		for (int i = 0; i < tank.getMovePath(); i++) {
 			int covered = 0;
 
-			String tankQuadrant = getQuadrant(tank.getX(), tank.getY());
-			int v = Integer.parseInt(tankQuadrant.split("_")[0]);
-			int h = Integer.parseInt(tankQuadrant.split("_")[1]);
+            int[]tankCoordinates = getQuadrant(tank.getX(), tank.getY());
+
+			int h = tankCoordinates[0];
+			int v = tankCoordinates[1];
 
 			// check limits x: 0, 513; y: 0, 513
-			if ((direction == Direction.UP && tank.getY() == 0) || (direction == Direction.DOWN && tank.getY() >= 512)
+			if ((direction == Direction.UP && tank.getY() <= 0) || (direction == Direction.DOWN && tank.getY() >= 512)
 					|| (direction == Direction.LEFT && tank.getX() == 0) || (direction == Direction.RIGHT && tank.getX() >= 512)) {
 				System.out.println("[illegal move] direction: " + direction
-						+ " tankX: " + tank.getX() + ", tankY: " + tank.getY());
+						+ " tankX: " + tank.getX() + ", tankY: " + tank.getY() + " Border achieved " + tank.toString());
 				return;
 			}
 			
 			// check next quadrant before move
 			if (direction == Direction.UP) {
-				v++;
-			} else if (direction == Direction.DOWN) {
 				v--;
+			} else if (direction == Direction.DOWN) {
+				v++;
 			} else if (direction == Direction.RIGHT) {
 				h++;
 			} else if (direction == Direction.LEFT) {
@@ -83,7 +84,7 @@ public class ActionField extends JPanel {
 			BFObject bfobject = battleField.scanQuadrant(v, h);
 			if (!(bfobject instanceof Blank) && !bfobject.isDestroyed()) {
 				System.out.println("[illegal move] direction: " + direction
-						+ " tankX: " + tank.getX() + ", tankY: " + tank.getY());
+						+ " tankX: " + tank.getX() + ", tankY: " + tank.getY() + " " + tank.toString());
 				return;
 			}
 	
@@ -138,10 +139,9 @@ public class ActionField extends JPanel {
 	}
 
 	private boolean processInterception() {
-		String coordinates = getQuadrant(bullet.getX(), bullet.getY());
-		int y = Integer.parseInt(coordinates.split("_")[0]);
-		int x = Integer.parseInt(coordinates.split("_")[1]);
-
+        int [] coordinates = getQuadrant(bullet.getX(), bullet.getY());
+        int x = coordinates[0];
+		int y = coordinates[1];
 		if (y >= 0 && y < 9 && x >= 0 && x < 9) {
 			BFObject bfObject = battleField.scanQuadrant(y, x);
 			if (!bfObject.isDestroyed() && !(bfObject instanceof Blank)) {
@@ -150,13 +150,13 @@ public class ActionField extends JPanel {
 			}
 			
 			// check aggressor
-			if (!aggressor.isDestroyed() && checkInterception(getQuadrant(aggressor.getX(), aggressor.getY()), coordinates)) {
+			if (!aggressor.isDestroyed()&& !bullet.autor.equals(aggressor) && checkInterception(getQuadrant(aggressor.getX(), aggressor.getY()), coordinates)) {
 				aggressor.destroy();
 				return true;
 			}
 
 			// check aggressor
-			if (!defender.isDestroyed() && checkInterception(getQuadrant(defender.getX(), defender.getY()), coordinates)) {
+			if (!defender.isDestroyed() && !bullet.autor.equals(defender)&& checkInterception(getQuadrant(defender.getX(), defender.getY()), coordinates)) {
 				defender.destroy();
 				return true;
 			}
@@ -164,12 +164,12 @@ public class ActionField extends JPanel {
 		return false;
 	}
 	
-	private boolean checkInterception(String object, String quadrant) {
-		int oy = Integer.parseInt(object.split("_")[0]);
-		int ox = Integer.parseInt(object.split("_")[1]);
+	private boolean checkInterception(int [] object, int [] quadrant) {
+		int oy = object[1];
+		int ox = object[0];
 
-		int qy = Integer.parseInt(quadrant.split("_")[0]);
-		int qx = Integer.parseInt(quadrant.split("_")[1]);
+		int qy = quadrant[1];
+		int qx = quadrant[0];
 
 		if (oy >= 0 && oy < 9 && ox >= 0 && ox < 9) {
 			if (oy == qy && ox == qx) {
@@ -179,9 +179,12 @@ public class ActionField extends JPanel {
 		return false;
 	}
 
-	public String getQuadrant(int x, int y) {
+	public int[] getQuadrant(int x, int y) {
 		// input data should be correct
-		return y / 64 + "_" + x / 64;
+		int [] quadrants = new int[2];
+        quadrants[0] = x/64;
+        quadrants[1] = y/64;
+		return quadrants;
 	}
 
 	public ActionField() throws Exception {
@@ -190,7 +193,7 @@ public class ActionField extends JPanel {
 
 		String location = battleField.getAggressorLocation();
 		aggressor = new BT7(battleField,
-			Integer.parseInt(location.split("_")[1]), Integer.parseInt(location.split("_")[0]), Direction.RIGHT);
+			Integer.parseInt(location.split("_")[1]), Integer.parseInt(location.split("_")[0]), Direction.LEFT);
 
 		bullet = new Bullet(-100, -100, Direction.NONE, new T34(battleField));
 

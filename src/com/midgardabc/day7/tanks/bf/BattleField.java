@@ -14,14 +14,14 @@ public class BattleField implements Drawable {
 
 	private String[][] battleFieldTemplate = {
 			{"B", "B", "B", "B", "B", "B", "B", "B", "B"},
-			{"B", " ", " ", " ", " ", " ", " ", " ", "B"},
+			{" ", " ", " ", " ", " ", " ", " ", " ", " "},
 			{"B", "B", "B", " ", "B", " ", "B", "B", "B"},
 			{"B", "B", "B", " ", " ", " ", "B", "B", "B"},
 			{"B", "B", "B", " ", "B", " ", "B", "B", "B"},
 			{"B", "B", " ", "W", "W", "W", " ", "B", "B"},
 			{"B", "B", " ", " ", " ", " ", " ", "B", "B"},
 			{"B", " ", " ", "B", "B", "B", " ", " ", "B"},
-			{"B", " ", " ", "B", "E", "B", " ", " ", "R"}
+			{" ", "B", " ", "B", "E", "B", " ", " ", "R"}
 		};
 
 	private BFObject[][] battleField = new BFObject[9][9];
