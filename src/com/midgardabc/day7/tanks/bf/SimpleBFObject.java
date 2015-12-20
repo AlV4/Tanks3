@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 
-public abstract class SimpleBFObject implements BFObject {
+public abstract class SimpleBFObject implements BFObject{
 
 	// current position on BF
 	private int x;
@@ -19,7 +19,7 @@ public abstract class SimpleBFObject implements BFObject {
 		this.y = y;
 	}
 	
-	@Override
+
 	public void destroy() {
 		isDestroyed = true;
 	}

@@ -3,6 +3,7 @@ package com.midgardabc.day7.tanks;
 import com.midgardabc.day7.tanks.bf.BFObject;
 import com.midgardabc.day7.tanks.bf.BattleField;
 import com.midgardabc.day7.tanks.bf.Blank;
+import com.midgardabc.day7.tanks.bf.Water;
 import com.midgardabc.day7.tanks.bf.tanks.Action;
 import com.midgardabc.day7.tanks.bf.tanks.*;
 
@@ -83,7 +84,7 @@ public class ActionField extends JPanel {
 			}
 			BFObject bfobject = battleField.scanQuadrant(v, h);
 
-			if (!(bfobject instanceof Blank) && !bfobject.isDestroyed() || h == tank.getEnemyPosition()[0] && v == tank.getEnemyPosition()[1]) {
+			if ((!(bfobject instanceof Blank) || bfobject instanceof Water) && !bfobject.isDestroyed() || h == tank.getEnemyPosition()[0] && v == tank.getEnemyPosition()[1]) {
 				System.out.println("[illegal move] direction: " + direction
 						+ " tankX: " + tank.getX() + ", tankY: " + tank.getY() + " " + tank.toString());
 				return;
@@ -145,7 +146,7 @@ public class ActionField extends JPanel {
 		int y = coordinates[1];
 		if (y >= 0 && y < 9 && x >= 0 && x < 9) {
 			BFObject bfObject = battleField.scanQuadrant(y, x);
-			if (!bfObject.isDestroyed() && !(bfObject instanceof Blank)) {
+			if (!bfObject.isDestroyed() && !(bfObject instanceof Blank) && !(bfObject instanceof Water)) {
 				battleField.destroyObject(y, x);
 				return true;
 			}

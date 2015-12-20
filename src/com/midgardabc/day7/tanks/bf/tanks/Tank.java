@@ -8,7 +8,7 @@ public interface Tank extends Drawable, Destroyable {
 	
 	public Action setUp();
 
-	public void move();
+	public Action move();
 
 	public Bullet fire();
 

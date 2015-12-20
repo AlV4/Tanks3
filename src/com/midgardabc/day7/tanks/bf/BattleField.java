@@ -13,13 +13,13 @@ public class BattleField implements Drawable {
 	private int bfHeight = 576;
 
 	private String[][] battleFieldTemplate = {
-			{"B", "B", "B", "B", "B", "B", "B", "B", "B"},
+			{"B", " ", "B", "B", "B", "B", "B", "B", "B"},
 			{" ", " ", " ", " ", " ", " ", " ", " ", " "},
-			{"B", "B", " ", "W", "B", " ", "B", "B", "B"},
-			{"B", "B", " ", "W", " ", " ", "B", "B", "B"},
-			{"B", "B", " ", "W", "B", " ", "B", "B", "B"},
-			{"B", "B", " ", "W", "W", "W", " ", "B", "B"},
-			{"B", "B", " ", "W", " ", " ", " ", "B", "B"},
+			{"B", " ", "R", "W", "B", " ", "B", "B", "B"},
+			{"B", " ", "W", "W", " ", " ", "B", "B", "B"},
+			{"B", " ", "W", "W", "B", " ", "B", "B", "B"},
+			{"B", " ", "R", "W", "W", "W", " ", "B", "B"},
+			{"B", " ", " ", "W", " ", " ", " ", "B", "B"},
 			{"B", " ", " ", "B", "B", "B", " ", " ", "B"},
 			{" ", " ", " ", "B", "E", "B", " ", " ", "R"}
 		};
@@ -86,6 +86,20 @@ public class BattleField implements Drawable {
 
 	public String getAggressorLocation() {
 		return "64_128";
+	}
+
+	public int[] fieldScanner(){
+		int[] coordinates = new int[2];
+		for(int i = 0; i < 9; i++){
+            for(int k = 0; i < 9; k++){
+                if(scanQuadrant(i,k).equals(BRICK)){
+                    coordinates[0] = i;
+                    coordinates[1] = k;
+                    break;
+                }
+            }
+        }
+		return coordinates;
 	}
 
 	public int getBfWidth() {

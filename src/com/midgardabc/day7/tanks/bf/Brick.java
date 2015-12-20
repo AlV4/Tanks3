@@ -2,7 +2,7 @@ package com.midgardabc.day7.tanks.bf;
 
 import java.awt.Color;
 
-public class Brick extends SimpleBFObject {
+public class Brick extends SimpleBFObject implements Destroyable{
 
 	public Brick(int x, int y) {
 		super(x, y);

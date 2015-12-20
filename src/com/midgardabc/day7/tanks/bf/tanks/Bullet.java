@@ -8,7 +8,7 @@ import java.awt.*;
 
 public class Bullet implements Drawable, Destroyable {
 
-	private int speed = 5;
+	private int speed = 2;
 	
 	private int x;
 	private int y;
