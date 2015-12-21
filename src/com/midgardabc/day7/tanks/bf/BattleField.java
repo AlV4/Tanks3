@@ -13,15 +13,15 @@ public class BattleField implements Drawable {
 	private int bfHeight = 576;
 
 	private String[][] battleFieldTemplate = {
-			{"B", " ", "B", "B", "B", "B", "B", "B", "B"},
-			{" ", " ", " ", " ", " ", " ", " ", " ", " "},
+			{"B", "B", "B", "B", "B", "B", "B", "B", "B"},
+			{"B", "B", " ", "B", "B", "B", "B", "B", " "},
 			{"B", " ", "R", "W", "B", " ", "B", "B", "B"},
 			{"B", " ", "W", "W", " ", " ", "B", "B", "B"},
 			{"B", " ", "W", "W", "B", " ", "B", "B", "B"},
 			{"B", " ", "R", "W", "W", "W", " ", "B", "B"},
-			{"B", " ", " ", "W", " ", " ", " ", "B", "B"},
+			{"B", " ", " ", "W", " ", " ", "B", "B", "B"},
 			{"B", " ", " ", "B", "B", "B", " ", " ", "B"},
-			{" ", " ", " ", "B", "E", "B", " ", " ", "R"}
+			{" ", " ", " ", "B", "E", "B", "B", "B", " "}
 		};
 
 	private BFObject[][] battleField = new BFObject[9][9];
@@ -91,15 +91,16 @@ public class BattleField implements Drawable {
 	public int[] fieldScanner(){
 		int[] coordinates = new int[2];
 		for(int i = 0; i < 9; i++){
-            for(int k = 0; i < 9; k++){
-                if(scanQuadrant(i,k).equals(BRICK)){
+            for(int k = 0; k < 9; k++){
+				BFObject simpleBFObject = scanQuadrant(i, k);
+                if(simpleBFObject instanceof Brick && !(simpleBFObject).isDestroyed()){
                     coordinates[0] = i;
                     coordinates[1] = k;
-                    break;
+                    return  coordinates;
                 }
             }
         }
-		return coordinates;
+		return null;
 	}
 
 	public int getBfWidth() {

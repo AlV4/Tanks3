@@ -9,6 +9,7 @@ import com.midgardabc.day7.tanks.bf.tanks.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 /**
  * Updated to object oriented style.
@@ -191,7 +192,7 @@ public class ActionField extends JPanel {
 
 	public ActionField() throws Exception {
 		battleField = new BattleField();
-		defender = new T34(battleField);
+        defender = new T34(battleField);
 
 		String location = battleField.getAggressorLocation();
 		aggressor = new BT7(battleField,

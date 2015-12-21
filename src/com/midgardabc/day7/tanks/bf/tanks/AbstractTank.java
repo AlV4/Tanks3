@@ -107,7 +107,7 @@ public abstract class AbstractTank implements Tank {
     public Action moveToQuadrant(int v, int h) {
         int coordX = v * 64;
         int coordY = h * 64;
-        if (getX() < x) {
+        if (getX() < coordX) {
             while (getX() != coordX) {
                 turn(Direction.RIGHT);
                 return Action.MOVE;
@@ -119,7 +119,7 @@ public abstract class AbstractTank implements Tank {
             }
         }
 
-        if (getY() < y) {
+        if (getY() < coordY) {
             while (getY() != coordY) {
                 turn(Direction.DOWN);
                 return Action.MOVE;
@@ -142,9 +142,7 @@ public abstract class AbstractTank implements Tank {
         return actions[new Random().nextInt(actions.length)];
     }
 
-    public void clean() {
 
-    }
 
     private boolean lineScanner(Direction direction) {
         int scanX = getX() / 64;
@@ -184,6 +182,26 @@ public abstract class AbstractTank implements Tank {
         }
 
         return false;
+    }
+
+    public Action clean(){
+        if(cleanPoint() != null){
+            return cleanPoint();
+
+        }else if(bf.fieldScanner() != null){
+            return moveToQuadrant(bf.fieldScanner()[1], bf.fieldScanner()[0]);
+        }
+        return Action.NONE;
+    }
+
+    private Action cleanPoint(){
+        for(int i = 0; i < Direction.values().length; i++) {
+            turn(Direction.values()[i]);
+            while (lineScanner(getDirection())) {
+                return Action.FIRE;
+            }
+        }
+        return null;
     }
 
 
