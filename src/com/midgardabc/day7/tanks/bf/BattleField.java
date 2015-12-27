@@ -13,7 +13,7 @@ public class BattleField implements Drawable {
 	private int bfHeight = 576;
 
 	private String[][] battleFieldTemplate = {
-			{"B", "B", "B", "B", "B", "B", "B", "B", "B"},
+			{" ", "B", "B", "B", "B", "B", "B", "B", "B"},
 			{"B", "B", " ", "B", "B", "B", "B", "B", " "},
 			{"B", " ", "R", "W", "B", " ", "B", "B", "B"},
 			{"B", " ", "W", "W", " ", " ", "B", "B", "B"},
@@ -85,8 +85,23 @@ public class BattleField implements Drawable {
 	}
 
 	public String getAggressorLocation() {
-		return "64_128";
+		return "0_0";
 	}
+
+	public int[] getEagleQuadrant(){
+        int[] coordinates = new int[2];
+        for(int i = 0; i < 9; i++){
+            for(int k = 0; k < 9; k++){
+                BFObject simpleBFObject = scanQuadrant(i, k);
+                if(simpleBFObject instanceof Eagle && !(simpleBFObject).isDestroyed()){
+                    coordinates[0] = i;
+                    coordinates[1] = k;
+                    return  coordinates;
+                }
+            }
+        }
+        return null;
+    }
 
 	public int[] fieldScanner(){
 		int[] coordinates = new int[2];

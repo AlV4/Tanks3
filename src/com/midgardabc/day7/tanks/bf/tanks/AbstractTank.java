@@ -184,6 +184,16 @@ public abstract class AbstractTank implements Tank {
         return false;
     }
 
+    public Action eagleHunt(){
+        if(cleanPoint() != null){
+            return cleanPoint();
+
+        }else if(bf.getEagleQuadrant() != null){
+            return moveToQuadrant(bf.getEagleQuadrant()[1], bf.getEagleQuadrant()[0]);
+        }
+        return Action.NONE;
+    }
+
     public Action clean(){
         if(cleanPoint() != null){
             return cleanPoint();

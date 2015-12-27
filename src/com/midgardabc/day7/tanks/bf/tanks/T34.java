@@ -23,7 +23,9 @@ public class T34 extends AbstractTank {
 
     @Override
     public Action setUp() {
-        return clean();
+
+       return moveRandom();
+//        return clean();
 
     }
 
