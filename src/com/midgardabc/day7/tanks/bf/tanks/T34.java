@@ -26,6 +26,7 @@ public class T34 extends AbstractTank {
 
        return moveRandom();
 //        return clean();
+//        return Action.NONE;
 
     }
 

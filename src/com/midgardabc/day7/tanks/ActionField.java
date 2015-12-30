@@ -9,7 +9,6 @@ import com.midgardabc.day7.tanks.bf.tanks.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 
 /**
  * Updated to object oriented style.
@@ -52,7 +51,7 @@ public class ActionField extends JPanel {
 		repaint();
 	}
 
-	private void processMove(Tank tank) throws Exception {
+	private boolean processMove(Tank tank) throws Exception {
 		processTurn(tank);
 		Direction direction = tank.getDirection();
 		int step = 1;
@@ -70,7 +69,7 @@ public class ActionField extends JPanel {
 					|| (direction == Direction.LEFT && tank.getX() == 0) || (direction == Direction.RIGHT && tank.getX() >= 512)) {
 				System.out.println("[illegal move] direction: " + direction
 						+ " tankX: " + tank.getX() + ", tankY: " + tank.getY() + " Border achieved " + tank.toString());
-				return;
+				return false;
 			}
 			
 			// check next quadrant before move
@@ -88,7 +87,7 @@ public class ActionField extends JPanel {
 			if ((!(bfobject instanceof Blank) || bfobject instanceof Water) && !bfobject.isDestroyed() || h == tank.getEnemyPosition()[0] && v == tank.getEnemyPosition()[1]) {
 				System.out.println("[illegal move] direction: " + direction
 						+ " tankX: " + tank.getX() + ", tankY: " + tank.getY() + " " + tank.toString());
-				return;
+				return false;
 			}
 	
 
@@ -114,6 +113,7 @@ public class ActionField extends JPanel {
 				Thread.sleep(tank.getSpeed());
 			}
 		}
+		return true;
 	}
 
 	private void processFire(Bullet bullet) throws Exception {

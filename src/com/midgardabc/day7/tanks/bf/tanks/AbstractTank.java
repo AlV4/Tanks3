@@ -31,10 +31,10 @@ public abstract class AbstractTank implements Tank {
     private int barrelWidth = 11;
     private int barrelHeight = 40;
     private Action[] actions = new Action[]{
-
             Action.MOVE,
-//            Action.FIRE,
-
+            Action.FIRE,
+            Action.NONE,
+            Action.FIRE
     };
 
     public AbstractTank(BattleField bf) {
@@ -136,13 +136,11 @@ public abstract class AbstractTank implements Tank {
     public Action moveRandom() {
         Direction[] dirs = Direction.values();
         setDirection(dirs[new Random().nextInt(dirs.length)]);
-        if (lineScanner(getDirection())) {
-            return Action.FIRE;
-        }
+//        if (lineScanner(getDirection())) {
+//            return Action.FIRE;
+//        }
         return actions[new Random().nextInt(actions.length)];
     }
-
-
 
     private boolean lineScanner(Direction direction) {
         int scanX = getX() / 64;
@@ -185,13 +183,18 @@ public abstract class AbstractTank implements Tank {
     }
 
     public Action eagleHunt(){
-        if(cleanPoint() != null){
-            return cleanPoint();
+        Action action = moveRandom();
 
-        }else if(bf.getEagleQuadrant() != null){
-            return moveToQuadrant(bf.getEagleQuadrant()[1], bf.getEagleQuadrant()[0]);
+        if(bf.getEagleQuadrant() != null){
+            int quadX = bf.getEagleQuadrant()[1];
+            int quadY = bf.getEagleQuadrant()[0];
+            action = moveToQuadrant(quadX, quadY);
+            if(!checkNextStep() || getX()/64 == quadX || getY()/64 == quadY){
+                action = Action.FIRE;
+            }
         }
-        return Action.NONE;
+
+        return action;
     }
 
     public Action clean(){
@@ -214,6 +217,32 @@ public abstract class AbstractTank implements Tank {
         return null;
     }
 
+
+    private boolean checkNextStep(){
+        int v = getY()/64;
+        int h = getX()/64;
+        if ((direction == Direction.UP && getY() <= 0) || (direction == Direction.DOWN && getY() >= 512)
+                || (direction == Direction.LEFT && getX() == 0) || (direction == Direction.RIGHT && getX() >= 512)) {
+            return false;
+        }
+        for (int i = 0; i < getMovePath(); i++) {
+
+            if (direction == Direction.UP) {
+                v--;
+            } else if (direction == Direction.DOWN) {
+                v++;
+            } else if (direction == Direction.RIGHT) {
+                h++;
+            } else if (direction == Direction.LEFT) {
+                h--;
+            }
+            BFObject bfobject = bf.scanQuadrant(v, h);
+            if ((!(bfobject instanceof Blank) || bfobject instanceof Water) && !bfobject.isDestroyed() || h == getEnemyPosition()[0] && v == getEnemyPosition()[1]) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public void updateX(int x) {
         this.x += x;

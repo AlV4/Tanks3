@@ -85,7 +85,7 @@ public class BattleField implements Drawable {
 	}
 
 	public String getAggressorLocation() {
-		return "0_0";
+		return "256_0";
 	}
 
 	public int[] getEagleQuadrant(){
