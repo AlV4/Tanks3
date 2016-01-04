@@ -14,14 +14,14 @@ public class BattleField implements Drawable {
 
 	private String[][] battleFieldTemplate = {
 			{" ", "B", "B", "B", "B", "B", "B", "B", "B"},
-			{"B", "B", " ", "B", "B", "B", "B", "B", " "},
-			{"B", " ", "R", "W", "B", " ", "B", "B", "B"},
+			{" ", " ", " ", "B", "B", "B", "B", "B", " "},
+			{"B", " ", "B", "W", "B", " ", "B", "B", "B"},
 			{"B", " ", "W", "W", " ", " ", "B", "B", "B"},
 			{"B", " ", "W", "W", "B", " ", "B", "B", "B"},
-			{"B", " ", "R", "W", "W", "W", " ", "B", "B"},
-			{"B", " ", " ", "W", " ", " ", "B", "B", "B"},
+			{" ", " ", " ", "W", "W", "W", " ", "B", "B"},
+			{"B", "B", " ", "W", " ", " ", "B", "B", "B"},
 			{"B", " ", " ", "B", "B", "B", " ", " ", "B"},
-			{" ", " ", " ", "B", "E", "B", "B", "B", " "}
+			{" ", " ", " ", " ", "E", "B", "B", "B", " "}
 		};
 
 	private BFObject[][] battleField = new BFObject[9][9];
@@ -85,7 +85,7 @@ public class BattleField implements Drawable {
 	}
 
 	public String getAggressorLocation() {
-		return "256_0";
+		return "0_0";
 	}
 
 	public int[] getEagleQuadrant(){
