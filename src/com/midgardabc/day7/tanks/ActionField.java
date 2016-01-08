@@ -158,7 +158,7 @@ public class ActionField extends JPanel {
 				return true;
 			}
 
-			// check aggressor
+			// check defender
 			if (!defender.isDestroyed() && !bullet.autor.equals(defender)&& checkInterception(getQuadrant(defender.getX(), defender.getY()), coordinates)) {
 				defender.destroy();
 				return true;
@@ -196,7 +196,7 @@ public class ActionField extends JPanel {
 
 		String location = battleField.getAggressorLocation();
 		aggressor = new BT7(battleField,
-			Integer.parseInt(location.split("_")[1]), Integer.parseInt(location.split("_")[0]), Direction.LEFT);
+			Integer.parseInt(location.split("_")[1]), Integer.parseInt(location.split("_")[0]), Direction.DOWN);
 
         defender.setEnemyTank(aggressor);
         aggressor.setEnemyTank(defender);

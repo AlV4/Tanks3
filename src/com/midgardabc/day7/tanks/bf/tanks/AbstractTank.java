@@ -4,6 +4,7 @@ import com.midgardabc.day7.tanks.Direction;
 import com.midgardabc.day7.tanks.bf.*;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
 
@@ -24,7 +25,9 @@ public abstract class AbstractTank implements Tank {
 
     private BattleField bf;
 
-    protected Stack listOfMovements;
+    protected Stack<Cell> listOfMovements;
+
+    boolean endOfMovement;
     protected Cell[][] roadMap;
 
     protected Color tankColor;
@@ -139,18 +142,12 @@ public abstract class AbstractTank implements Tank {
     public Action moveRandom() {
         Direction[] dirs = Direction.values();
         setDirection(dirs[new Random().nextInt(dirs.length)]);
-//        if (lineScanner(getDirection())) {
-//            return Action.FIRE;
-//        }
         return actions[new Random().nextInt(actions.length)];
     }
 
     public Action moveRandomSilence() {
         Direction[] dirs = Direction.values();
         setDirection(dirs[new Random().nextInt(dirs.length)]);
-//        if (lineScanner(getDirection())) {
-//            return Action.FIRE;
-//        }
         return actions2[new Random().nextInt(actions2.length)];
     }
 
@@ -195,7 +192,6 @@ public abstract class AbstractTank implements Tank {
     }
 
     public class Cell {
-        String s = "*";
         public int x, y;
         boolean isItWall = true;
         boolean marked = false;
@@ -206,12 +202,8 @@ public abstract class AbstractTank implements Tank {
         };
 
         public String toString() {
-            if(isItWall){
-                s = "#";
-            }else {
-                s = " ";
-            }
-            return "[" + x + "{" + s + "}" + y + "]";
+
+            return "[" + x + "{" + trackNumber + "}" + y + "]";
         }
     }
 
@@ -255,15 +247,13 @@ public abstract class AbstractTank implements Tank {
         }
     }
 
-    protected void shortestWay(int xFrom, int yFrom, int xTo, int yTo) {
-        listOfMovements = new Stack();
+    private Cell[][] roadChecker(int xFrom, int yFrom) {
         Cell[][] currentRoad = roadMapCreator();
         Cell start = currentRoad[xFrom][yFrom];
         start.trackNumber = 0;
         start.marked = true;
-        Cell finish = currentRoad[xTo][yTo];
         boolean markingIsFinished = false;
-        while (!finish.marked && !markingIsFinished) {
+        while (!markingIsFinished) {
             markingIsFinished = true;
             for (int i = 0; i < 9; i++) {
                 for (int k = 0; k < 9; k++) {
@@ -280,6 +270,12 @@ public abstract class AbstractTank implements Tank {
                 }
             }
         }
+        return currentRoad;
+    }
+
+    private void finalDectination(Cell[][] currentRoad, int[] xyTo) {
+        Cell finish = currentRoad[xyTo[0]][xyTo[1]];
+        listOfMovements = new Stack<>();
         if (finish.marked) {
             Cell cp = finish;
             while (cp.trackNumber != 0) {
@@ -292,30 +288,69 @@ public abstract class AbstractTank implements Tank {
                 }
             }
         }
-//        System.out.println(Arrays.asList(listOfMovements));
+    }
+
+    protected void shortestWay(int xFrom, int yFrom, int[] xyTo) {
+        Cell[][] currentRoad = roadChecker(xFrom, yFrom);
+        finalDectination(currentRoad, xyTo);
     }
 
     public Action eagleHunt() {
-//        printMap();
-        while (bf.getEagleQuadrant() != null) {
-            shortestWay(getY() / 64, getX() / 64, bf.getEagleQuadrant()[0], bf.getEagleQuadrant()[1]);
-            while (listOfMovements.size() > 0) {
-                Cell cp = (Cell) listOfMovements.pop();
-                if (listOfMovements.size() == 1) {
-                    return eagleDemolition();
-                }
-                return moveToQuadrant(cp.y, cp.x);
+        if (eagleExist() && firePositionExist() && !endOfMovement) {
+            shortestWay(getY() / 64, getX() / 64, firePosition());
+            Cell nextStep = listOfMovements.pop();
+            if(listOfMovements.empty()){
+                endOfMovement = true;
             }
+            System.out.println(nextStep);
+            return moveToQuadrant(nextStep.y, nextStep.x);
+        } if (endOfMovement && eagleExist()){
+            return eagleDemolition();
         }
-        return moveRandom();
+       return moveRandom();
     }
 
-    private int[] firePosition(Object o) {
-        int[] quadrant = new int[2];
-        if (o instanceof Eagle) {
-            quadrant[0] = bf.getEagleQuadrant()[0];
-            quadrant[1] = bf.getEagleQuadrant()[1];
+    private boolean eagleExist(){
+        if(bf.getEagleQuadrant() != null){
+            return true;
         }
+        return false;
+    }
+
+    private boolean firePositionExist(){
+        if(firePosition() != null){
+            return true;
+        }
+        return false;
+    }
+
+    private int[] firePosition() {
+        int[] quadrant = bf.getEagleQuadrant();
+        if(quadrant == null){
+            return null;
+        }
+        Cell[][] currentRoad = roadChecker(getY() / 64, getX() / 64);
+        ArrayList<Cell> cells = new ArrayList();
+        for (int i = 0; i < 9; i++) {
+            Cell c = currentRoad[i][quadrant[1]];
+            Cell c2 = currentRoad[quadrant[0]][i];
+            if (!c.isItWall && c.trackNumber > 0){
+                cells.add(c);}
+            if(!c2.isItWall && c2.trackNumber > 0) {
+                cells.add(c2);
+            }
+        }
+        if (cells.isEmpty()) {
+            return null;
+        }
+        Cell cp = cells.get(0);
+        for (Cell cell : cells) {
+            if (cell.trackNumber > 0 && cell.trackNumber < cp.trackNumber) {
+                cp = cell;
+            }
+        }
+        quadrant[0] = cp.x;
+        quadrant[1] = cp.y;
         return quadrant;
     }
 
@@ -376,9 +411,9 @@ public abstract class AbstractTank implements Tank {
         return true;
     }
 
-    private void printMap(){
-        for (Cell[]cc:roadMap){
-            for (Cell c:cc){
+    private void printMap(Cell[][] roadMap) {
+        for (Cell[] cc : roadMap) {
+            for (Cell c : cc) {
                 System.out.print(c);
             }
             System.out.println();

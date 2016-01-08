@@ -8,7 +8,7 @@ import java.awt.*;
 public class T34 extends AbstractTank {
 
     public T34(BattleField bf) {
-        super(bf, 128, 512, Direction.UP);
+        super(bf, 64, 512, Direction.UP);
         tankColor = new Color(0, 136, 255);
         towerColor = new Color(248, 255, 60);
     }
@@ -23,10 +23,10 @@ public class T34 extends AbstractTank {
 
     @Override
     public Action setUp() {
-
-//       return moveRandom();
+//            return eagleHunt();
+       return moveRandomSilence();
 //        return clean();
-        return Action.NONE;
+//        return Action.NONE;
 
     }
 

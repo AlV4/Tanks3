@@ -13,15 +13,15 @@ public class BattleField implements Drawable {
 	private int bfHeight = 576;
 
 	private String[][] battleFieldTemplate = {
-			{" ", " ", "B", "B", " ", " ", " ", "B", "B"},
-			{" ", " ", " ", "B", " ", "B", " ", "B", " "},
-			{"B", " ", " ", " ", " ", "B", " ", "B", " "},
-			{"B", " ", "W", "W", " ", "B", " ", "B", " "},
-			{"B", " ", "W", "W", " ", " ", " ", " ", " "},
-			{" ", " ", " ", "W", "W", "W", " ", "B", "B"},
-			{"B", "B", " ", "W", " ", "B", " ", "B", " "},
-			{"B", " ", " ", "B", " ", "B", " ", " ", " "},
-			{" ", " ", " ", "B", "E", " ", " ", "B", " "}
+			{" ", " ", "B", " ", "W", "B", " ", "B", "B"},
+			{" ", " ", " ", " ", "B", " ", " ", " ", " "},
+			{"B", " ", "W", "W", "B", "B", "B", "B", " "},
+			{"B", " ", " ", " ", "W", "B", " ", " ", " "},
+			{" ", " ", "W", "W", " ", "W", " ", "B", "B"},
+			{" ", "W", "W", "W", "W", "W", " ", " ", " "},
+			{" ", "B", "B", "B", "B", " ", "W", "B", " "},
+			{" ", "B", "B", "B", "B", "B", " ", " ", " "},
+			{" ", " ", " ", "B", "E", "B", "B", "B", "B"}
 		};
 
 	private BFObject[][] battleField = new BFObject[9][9];
@@ -85,7 +85,7 @@ public class BattleField implements Drawable {
 	}
 
 	public String getAggressorLocation() {
-		return "0_0";
+		return "0_384";
 	}
 
 	public int[] getEagleQuadrant(){
