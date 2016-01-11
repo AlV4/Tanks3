@@ -5,6 +5,7 @@ import com.midgardabc.day7.tanks.bf.*;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Stack;
 
@@ -40,6 +41,9 @@ public abstract class AbstractTank implements Tank {
     };
     private Action[] actions2 = new Action[]{
             Action.MOVE
+    };
+    private int[][] defencePerimeter = {
+            {8, 2}, {7, 2}, {6, 2}, {6, 3}, {6, 4}, {6, 5}, {6, 6}, {7, 6}, {8, 6}
     };
 
     public AbstractTank(BattleField bf) {
@@ -280,6 +284,32 @@ public abstract class AbstractTank implements Tank {
         return currentRoad;
     }
 
+    private Cell[][] mapChecker() {
+        Cell[][] currentRoad = roadMapCreator();
+        Cell start = currentRoad[getY()/64][getX()/64];
+        start.trackNumber = 0;
+        start.marked = true;
+        boolean markingIsFinished = false;
+        while (!markingIsFinished) {
+            markingIsFinished = true;
+            for (int i = 0; i < 9; i++) {
+                for (int k = 0; k < 9; k++) {
+                    Cell cp = currentRoad[k][i];
+                    if (cp.marked) {
+                        for (int idx = 0; idx < 4; idx++) {
+                            if (cp.neighbors[idx] != null&& !cp.neighbors[idx].marked) {
+                                cp.neighbors[idx].marked = true;
+                                cp.neighbors[idx].trackNumber = cp.trackNumber + 1;
+                                markingIsFinished = false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return currentRoad;
+    }
+
     private void finalDestination(Cell[][] currentRoad, int[] xyTo) {
         Cell finish = currentRoad[xyTo[0]][xyTo[1]];
         listOfMovements = new Stack<>();
@@ -300,6 +330,63 @@ public abstract class AbstractTank implements Tank {
     protected void shortestWay(int[] xyTo) {
         Cell[][] currentRoad = roadChecker();
         finalDestination(currentRoad, xyTo);
+    }
+
+    private boolean isDefencePerimeterClear(){
+        for(int[]quadCoordinates:defencePerimeter){
+            BFObject quad = bf.scanQuadrant(quadCoordinates[0], quadCoordinates[1]);
+            if(isItBrick(quad)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Action cleanPerimeter(){
+        Cell[][] currentMap = mapChecker();
+        ArrayList<Cell> perimeterPositions = new ArrayList();
+        int[] quadrant = new int[2];
+        for (int[]position : defencePerimeter){
+            Cell c = currentMap[position[0]][position[1]];
+            if(isItBrick(bf.scanQuadrant(c.x, c.y))) {
+                perimeterPositions.add(c);
+            }
+        }
+        if(perimeterPositions.isEmpty()){
+            return Action.NONE;
+        }
+        Cell cp = perimeterPositions.get(0);
+        for (Cell cell : perimeterPositions) {
+            if (cell.trackNumber < cp.trackNumber) {
+                cp = cell;
+            }
+        }
+        System.out.println(Arrays.asList(perimeterPositions));
+        quadrant[0] = cp.y;
+        quadrant[1] = cp.x;
+        System.out.println(Arrays.toString(quadrant));
+        finalDestination(currentMap, quadrant);
+        Cell nextStep = listOfMovements.pop();
+        if(listOfMovements.empty()){
+            endOfMovement = true;
+        }
+        quadrant[0] = nextStep.y;
+        quadrant[1] = nextStep.x;
+        if(endOfMovement && isItBrick(bf.scanQuadrant(quadrant[1],quadrant[0]))){
+           return shootTargetXY(quadrant);
+        }
+        return moveToQuadrant(quadrant[1], quadrant[0]);
+//        finalDestination(currentMap,quadrant);
+
+//        System.out.println(Arrays.asList(listOfMovements));
+//        Cell nextStep = listOfMovements.pop();
+//        quadrant[0] = nextStep.x;
+//        quadrant[1] = nextStep.y;
+//        if(!bf.scanQuadrant(quadrant[1], quadrant[0]).isDestroyed()) {
+//            System.out.println(Arrays.toString(quadrant));
+//            return shootTargetXY(quadrant);
+//        }
+//        return moveToQuadrant(quadrant[0], quadrant[1]);
     }
 
     public Action enemyHunt(){
@@ -330,6 +417,20 @@ public abstract class AbstractTank implements Tank {
        return moveRandom();
     }
 
+    public Action shootTargetXY(int[]target) {
+        if (target[0] > getX() / 64 && target[1] == getY() / 64) {
+            setDirection(Direction.RIGHT);
+        } else if (target[0] < getX() / 64 && target[1] == getY() / 64) {
+            setDirection(Direction.LEFT);
+        } else if(target[1] > getY() / 64 && target[0] == getX() / 64){
+            setDirection(Direction.DOWN);
+        } else if(target[1] < getY() / 64 && target[0] == getX() / 64) {
+            setDirection(Direction.UP);
+        }
+            return Action.FIRE;
+
+    }
+
     private boolean eagleExist(){
         if(bf.getEagleQuadrant() != null){
             return true;
@@ -349,28 +450,28 @@ public abstract class AbstractTank implements Tank {
         if (target.trim().toUpperCase().equals("EAGLE")) {
             quadrant[1] = bf.getEagleQuadrant()[0];
             quadrant[0] = bf.getEagleQuadrant()[1];
-        }else {
+        }else if(target.trim().toUpperCase().equals("ENEMY")){
             quadrant = getEnemyPosition();
         }
         if(quadrant == null){
             return null;
         }
         Cell[][] currentRoad = roadChecker();
-        ArrayList<Cell> cells = new ArrayList();
+        ArrayList<Cell> possibleFirePositions = new ArrayList();
         for (int i = 8; i > 0; i--) {
             Cell c = currentRoad[quadrant[1]][i];
             Cell c2 = currentRoad[i][quadrant[0]];
             if (!c.isItWall && c.trackNumber > 0){
-                cells.add(c);}
+                possibleFirePositions.add(c);}
             if(!c2.isItWall && c2.trackNumber > 0) {
-                cells.add(c2);
+                possibleFirePositions.add(c2);
             }
         }
-        if (cells.isEmpty()) {
+        if (possibleFirePositions.isEmpty()) {
             return null;
         }
-        Cell cp = cells.get(0);
-        for (Cell cell : cells) {
+        Cell cp = possibleFirePositions.get(0);
+        for (Cell cell : possibleFirePositions) {
             if (cell.trackNumber >= 0 && cell.trackNumber < cp.trackNumber) {
                 cp = cell;
             }
@@ -424,14 +525,14 @@ public abstract class AbstractTank implements Tank {
         return null;
     }
 
-    private boolean checkNextQuad() {
+    private boolean checkNextQuad(int quantity) {
         int v = getY() / 64;
         int h = getX() / 64;
         if ((direction == Direction.UP && getY() <= 0) || (direction == Direction.DOWN && getY() >= 512)
                 || (direction == Direction.LEFT && getX() == 0) || (direction == Direction.RIGHT && getX() >= 512)) {
             return false;
         }
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < quantity; i++) {
 
             if (direction == Direction.UP) {
                 v--;
