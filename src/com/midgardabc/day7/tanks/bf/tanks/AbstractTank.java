@@ -5,7 +5,6 @@ import com.midgardabc.day7.tanks.bf.*;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Stack;
 
@@ -27,8 +26,9 @@ public abstract class AbstractTank implements Tank {
     private BattleField bf;
 
     protected Stack<Cell> listOfMovements;
-
-    boolean endOfMovement;
+    private int[] nextStep = new int[2];
+    private boolean movementPossibility;
+    private boolean endOfMovement;
     protected Cell[][] roadMap;
 
     protected Color tankColor;
@@ -47,7 +47,7 @@ public abstract class AbstractTank implements Tank {
     };
 
     public AbstractTank(BattleField bf) {
-        this(bf, 128, 512, Direction.UP);
+        this(bf, 128, 512, Direction.RIGHT);
     }
 
     public AbstractTank(BattleField bf, int x, int y, Direction direction) {
@@ -114,28 +114,52 @@ public abstract class AbstractTank implements Tank {
         destroyed = true;
     }
 
+    private void turn(int v, int h) {
+        int coordX = v * 64;
+        int coordY = h * 64;
+        if (getX() < coordX) {
+            if (getX() != coordX) {
+                turn(Direction.RIGHT);
+            }
+        } else {
+            if (getX() != coordX) {
+                turn(Direction.LEFT);
+            }
+        }
+
+        if (getY() < coordY) {
+            if (getY() != coordY) {
+                turn(Direction.DOWN);
+            }
+        } else {
+            if (getY() != coordY) {
+                turn(Direction.UP);
+            }
+        }
+    }
+
     public Action moveToQuadrant(int v, int h) {
         int coordX = v * 64;
         int coordY = h * 64;
         if (getX() < coordX) {
-            while (getX() != coordX) {
+            if (getX() != coordX) {
                 turn(Direction.RIGHT);
                 return Action.MOVE;
             }
         } else {
-            while (getX() != coordX) {
+            if (getX() != coordX) {
                 turn(Direction.LEFT);
                 return Action.MOVE;
             }
         }
 
         if (getY() < coordY) {
-            while (getY() != coordY) {
+            if (getY() != coordY) {
                 turn(Direction.DOWN);
                 return Action.MOVE;
             }
         } else {
-            while (getY() != coordY) {
+            if (getY() != coordY) {
                 turn(Direction.UP);
                 return Action.MOVE;
             }
@@ -152,11 +176,14 @@ public abstract class AbstractTank implements Tank {
     public Action moveRandomSilence() {
         Direction[] dirs = Direction.values();
         setDirection(dirs[new Random().nextInt(dirs.length)]);
+        if(!checkNextQuad(100)){
+            return Action.FIRE;
+        }
         return actions2[new Random().nextInt(actions2.length)];
     }
 
     private boolean isItBrick(BFObject bfObject) {
-        if (!(bfObject).isDestroyed() && !(bfObject instanceof Blank) && !(bfObject instanceof Water)) {
+        if (!(bfObject).isDestroyed() && bfObject instanceof Brick) {
             return true;
         }
         return false;
@@ -260,7 +287,7 @@ public abstract class AbstractTank implements Tank {
 
     private Cell[][] roadChecker() {
         Cell[][] currentRoad = roadMapCreator();
-        Cell start = currentRoad[getY()/64][getX()/64];
+        Cell start = currentRoad[getY() / 64][getX() / 64];
         start.trackNumber = 0;
         start.marked = true;
         boolean markingIsFinished = false;
@@ -286,7 +313,7 @@ public abstract class AbstractTank implements Tank {
 
     private Cell[][] mapChecker() {
         Cell[][] currentRoad = roadMapCreator();
-        Cell start = currentRoad[getY()/64][getX()/64];
+        Cell start = currentRoad[getY() / 64][getX() / 64];
         start.trackNumber = 0;
         start.marked = true;
         boolean markingIsFinished = false;
@@ -297,7 +324,7 @@ public abstract class AbstractTank implements Tank {
                     Cell cp = currentRoad[k][i];
                     if (cp.marked) {
                         for (int idx = 0; idx < 4; idx++) {
-                            if (cp.neighbors[idx] != null&& !cp.neighbors[idx].marked) {
+                            if (cp.neighbors[idx] != null && !cp.neighbors[idx].marked) {
                                 cp.neighbors[idx].marked = true;
                                 cp.neighbors[idx].trackNumber = cp.trackNumber + 1;
                                 markingIsFinished = false;
@@ -332,68 +359,21 @@ public abstract class AbstractTank implements Tank {
         finalDestination(currentRoad, xyTo);
     }
 
-    private boolean isDefencePerimeterClear(){
-        for(int[]quadCoordinates:defencePerimeter){
+    private boolean isDefencePerimeterClear() {
+        for (int[] quadCoordinates : defencePerimeter) {
             BFObject quad = bf.scanQuadrant(quadCoordinates[0], quadCoordinates[1]);
-            if(isItBrick(quad)){
+            if (isItBrick(quad)) {
                 return false;
             }
         }
         return true;
     }
 
-    public Action cleanPerimeter(){
-        Cell[][] currentMap = mapChecker();
-        ArrayList<Cell> perimeterPositions = new ArrayList();
-        int[] quadrant = new int[2];
-        for (int[]position : defencePerimeter){
-            Cell c = currentMap[position[0]][position[1]];
-            if(isItBrick(bf.scanQuadrant(c.x, c.y))) {
-                perimeterPositions.add(c);
-            }
-        }
-        if(perimeterPositions.isEmpty()){
-            return Action.NONE;
-        }
-        Cell cp = perimeterPositions.get(0);
-        for (Cell cell : perimeterPositions) {
-            if (cell.trackNumber < cp.trackNumber) {
-                cp = cell;
-            }
-        }
-        System.out.println(Arrays.asList(perimeterPositions));
-        quadrant[0] = cp.y;
-        quadrant[1] = cp.x;
-        System.out.println(Arrays.toString(quadrant));
-        finalDestination(currentMap, quadrant);
-        Cell nextStep = listOfMovements.pop();
-        if(listOfMovements.empty()){
-            endOfMovement = true;
-        }
-        quadrant[0] = nextStep.y;
-        quadrant[1] = nextStep.x;
-        if(endOfMovement && isItBrick(bf.scanQuadrant(quadrant[1],quadrant[0]))){
-           return shootTargetXY(quadrant);
-        }
-        return moveToQuadrant(quadrant[1], quadrant[0]);
-//        finalDestination(currentMap,quadrant);
-
-//        System.out.println(Arrays.asList(listOfMovements));
-//        Cell nextStep = listOfMovements.pop();
-//        quadrant[0] = nextStep.x;
-//        quadrant[1] = nextStep.y;
-//        if(!bf.scanQuadrant(quadrant[1], quadrant[0]).isDestroyed()) {
-//            System.out.println(Arrays.toString(quadrant));
-//            return shootTargetXY(quadrant);
-//        }
-//        return moveToQuadrant(quadrant[0], quadrant[1]);
-    }
-
-    public Action enemyHunt(){
+    public Action enemyHunt() {
         if (firePositionExist("enemy") && !endOfMovement) {
             shortestWay(firePosition("enemy"));
             Cell nextStep = listOfMovements.pop();
-            if(getX()/64 == getEnemyPosition()[0] || getY() / 64 == getEnemyPosition()[1]){
+            if (getX() / 64 == getEnemyPosition()[0] || getY() / 64 == getEnemyPosition()[1]) {
                 endOfMovement = true;
                 return enemyDemolition();
             }
@@ -407,39 +387,40 @@ public abstract class AbstractTank implements Tank {
         if (eagleExist() && firePositionExist("EAGLE") && !endOfMovement) {
             shortestWay(firePosition("EAGLE"));
             Cell nextStep = listOfMovements.pop();
-            if(listOfMovements.empty()){
+            if (listOfMovements.empty()) {
                 endOfMovement = true;
             }
             return moveToQuadrant(nextStep.y, nextStep.x);
-        } if (endOfMovement && eagleExist()){
+        }
+        if (endOfMovement && eagleExist()) {
             return eagleDemolition();
         }
-       return moveRandom();
+        return moveRandom();
     }
 
-    public Action shootTargetXY(int[]target) {
+    public Action shootTargetXY(int[] target) {
         if (target[0] > getX() / 64 && target[1] == getY() / 64) {
             setDirection(Direction.RIGHT);
         } else if (target[0] < getX() / 64 && target[1] == getY() / 64) {
             setDirection(Direction.LEFT);
-        } else if(target[1] > getY() / 64 && target[0] == getX() / 64){
+        } else if (target[1] > getY() / 64 && target[0] == getX() / 64) {
             setDirection(Direction.DOWN);
-        } else if(target[1] < getY() / 64 && target[0] == getX() / 64) {
+        } else if (target[1] < getY() / 64 && target[0] == getX() / 64) {
             setDirection(Direction.UP);
         }
-            return Action.FIRE;
+        return Action.FIRE;
 
     }
 
-    private boolean eagleExist(){
-        if(bf.getEagleQuadrant() != null){
+    private boolean eagleExist() {
+        if (bf.getEagleQuadrant() != null) {
             return true;
         }
         return false;
     }
 
-    private boolean firePositionExist(String target){
-        if(firePosition(target) != null){
+    private boolean firePositionExist(String target) {
+        if (firePosition(target) != null) {
             return true;
         }
         return false;
@@ -450,10 +431,10 @@ public abstract class AbstractTank implements Tank {
         if (target.trim().toUpperCase().equals("EAGLE")) {
             quadrant[1] = bf.getEagleQuadrant()[0];
             quadrant[0] = bf.getEagleQuadrant()[1];
-        }else if(target.trim().toUpperCase().equals("ENEMY")){
+        } else if (target.trim().toUpperCase().equals("ENEMY")) {
             quadrant = getEnemyPosition();
         }
-        if(quadrant == null){
+        if (quadrant == null) {
             return null;
         }
         Cell[][] currentRoad = roadChecker();
@@ -461,9 +442,10 @@ public abstract class AbstractTank implements Tank {
         for (int i = 8; i > 0; i--) {
             Cell c = currentRoad[quadrant[1]][i];
             Cell c2 = currentRoad[i][quadrant[0]];
-            if (!c.isItWall && c.trackNumber > 0){
-                possibleFirePositions.add(c);}
-            if(!c2.isItWall && c2.trackNumber > 0) {
+            if (!c.isItWall && c.trackNumber > 0) {
+                possibleFirePositions.add(c);
+            }
+            if (!c2.isItWall && c2.trackNumber > 0) {
                 possibleFirePositions.add(c2);
             }
         }
@@ -497,9 +479,9 @@ public abstract class AbstractTank implements Tank {
             setDirection(Direction.RIGHT);
         } else if (getEnemyPosition()[0] < getX() / 64 && getEnemyPosition()[1] == getY() / 64) {
             setDirection(Direction.LEFT);
-        } else if(getEnemyPosition()[1] > getY() / 64 && getEnemyPosition()[0] == getX() / 64){
+        } else if (getEnemyPosition()[1] > getY() / 64 && getEnemyPosition()[0] == getX() / 64) {
             setDirection(Direction.DOWN);
-        } else if(getEnemyPosition()[1] < getY() / 64 && getEnemyPosition()[0] == getX() / 64) {
+        } else if (getEnemyPosition()[1] < getY() / 64 && getEnemyPosition()[0] == getX() / 64) {
             setDirection(Direction.UP);
         }
         return Action.FIRE;
@@ -526,26 +508,31 @@ public abstract class AbstractTank implements Tank {
     }
 
     private boolean checkNextQuad(int quantity) {
-        int v = getY() / 64;
-        int h = getX() / 64;
+        int numX = getX() / 64;
+        int numY =  getY()/ 64;
         if ((direction == Direction.UP && getY() <= 0) || (direction == Direction.DOWN && getY() >= 512)
-                || (direction == Direction.LEFT && getX() == 0) || (direction == Direction.RIGHT && getX() >= 512)) {
+                || (direction == Direction.LEFT && getX() <= 0) || (direction == Direction.RIGHT && getX() >= 512)) {
             return false;
         }
         for (int i = 0; i < quantity; i++) {
 
-            if (direction == Direction.UP) {
-                v--;
-            } else if (direction == Direction.DOWN) {
-                v++;
-            } else if (direction == Direction.RIGHT) {
-                h++;
-            } else if (direction == Direction.LEFT) {
-                h--;
+            if (getDirection() == Direction.UP) {
+                numY--;
+            } else if (getDirection() == Direction.DOWN) {
+                numY++;
+            } else if (getDirection() == Direction.RIGHT) {
+                numX++;
+            } else if (getDirection() == Direction.LEFT) {
+                numX--;
             }
-            BFObject bfobject = bf.scanQuadrant(v, h);
-            if ((!(bfobject instanceof Blank) || bfobject instanceof Water) && !bfobject.isDestroyed() || h == getEnemyPosition()[0] && v == getEnemyPosition()[1]) {
-                return false;
+            try {
+
+                BFObject bfobject = bf.scanQuadrant(numY, numX);
+                if (isItBrick(bfobject) || numX == getEnemyPosition()[0] && numY == getEnemyPosition()[1]) {
+                    return false;
+                }
+            }catch (IndexOutOfBoundsException e){
+                return true;
             }
         }
         return true;

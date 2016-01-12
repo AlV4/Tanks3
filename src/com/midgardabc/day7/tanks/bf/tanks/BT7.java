@@ -26,9 +26,9 @@ public class BT7 extends AbstractTank {
 
 	@Override
 	public Action setUp() {
-//		return moveRandomSilence();
+		return moveRandomSilence();
 //		return enemyHunt();
-        return eagleHunt();
+//        return eagleHunt();
 //		return moveRandom();
 //		return clean();
 	}
