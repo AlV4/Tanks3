@@ -220,7 +220,7 @@ public abstract class AbstractTank implements Tank {
     }
 
     private boolean isItBrick(BFObject bfObject) {
-        if (!(bfObject).isDestroyed() && bfObject instanceof Brick) {
+        if (bfObject instanceof Brick && !bfObject.isDestroyed()) {
             return true;
         }
         return false;
@@ -422,28 +422,28 @@ public abstract class AbstractTank implements Tank {
         if(!isDefencePerimeterClear() && !checkNextQuad(2)){
             return Action.FIRE;
         }
-        return moveRandom();
+        return cleanPoint();
     }
 
     public Action eagleDefence(){
-        if(isDefencePerimeterClear()){
-            return enemyHunt();
+        if(!isDefencePerimeterClear()){
+            return cleanPerimeter();
         }
-        return cleanPerimeter();
+        return enemyHunt();
     }
 
     public Action enemyHunt() {
-        if (firePositionExist("enemy") && !endOfMovement) {
-            shortestWay(firePosition("enemy"));
+        if (firePositionExist("ENEMY") && !endOfMovement) {
+            shortestWay(firePosition("ENEMY"));
             Cell nextStep = listOfMovements.pop();
             if (getX() / 64 == getEnemyPosition()[0] || getY() / 64 == getEnemyPosition()[1]) {
                 endOfMovement = true;
                 return enemyDemolition();
             }
-            return moveToQuadrant(nextStep.y, nextStep.x);
+            return forcedMoveToQuadrant(nextStep.y, nextStep.x);
         }
         endOfMovement = false;
-        return Action.NONE;
+        return moveRandom();
     }
 
     public Action eagleHunt() {
