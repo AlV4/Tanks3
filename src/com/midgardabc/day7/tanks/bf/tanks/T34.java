@@ -23,9 +23,10 @@ public class T34 extends AbstractTank {
 
     @Override
     public Action setUp() {
+        return eagleDefence();
 //        return enemyHunt();
 //            return eagleHunt();
-       return moveRandomSilence();
+//       return moveRandomSilence();
 //        return moveRandom();
 //        return clean();
 //        return Action.NONE;

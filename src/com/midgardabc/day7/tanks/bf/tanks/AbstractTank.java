@@ -26,7 +26,6 @@ public abstract class AbstractTank implements Tank {
     private BattleField bf;
 
     protected Stack<Cell> listOfMovements;
-    private int[] nextStep = new int[2];
     private boolean movementPossibility;
     private boolean endOfMovement;
     protected Cell[][] roadMap;
@@ -167,6 +166,47 @@ public abstract class AbstractTank implements Tank {
         return Action.NONE;
     }
 
+    public Action forcedMoveToQuadrant(int v, int h) {
+        int coordX = v * 64;
+        int coordY = h * 64;
+        if (getX() < coordX) {
+            if (getX() != coordX) {
+                turn(Direction.RIGHT);
+                if(!checkNextQuad(1)){
+                    return Action.FIRE;
+                }
+                return Action.MOVE;
+            }
+        } else {
+            if (getX() != coordX) {
+                turn(Direction.LEFT);
+                if(!checkNextQuad(1)){
+                    return Action.FIRE;
+                }
+                return Action.MOVE;
+            }
+        }
+
+        if (getY() < coordY) {
+            if (getY() != coordY) {
+                turn(Direction.DOWN);
+                if(!checkNextQuad(1)){
+                    return Action.FIRE;
+                }
+                return Action.MOVE;
+            }
+        } else {
+            if (getY() != coordY) {
+                turn(Direction.UP);
+                if(!checkNextQuad(1)){
+                    return Action.FIRE;
+                }
+                return Action.MOVE;
+            }
+        }
+        return Action.NONE;
+    }
+
     public Action moveRandom() {
         Direction[] dirs = Direction.values();
         setDirection(dirs[new Random().nextInt(dirs.length)]);
@@ -176,9 +216,6 @@ public abstract class AbstractTank implements Tank {
     public Action moveRandomSilence() {
         Direction[] dirs = Direction.values();
         setDirection(dirs[new Random().nextInt(dirs.length)]);
-        if(!checkNextQuad(100)){
-            return Action.FIRE;
-        }
         return actions2[new Random().nextInt(actions2.length)];
     }
 
@@ -229,7 +266,7 @@ public abstract class AbstractTank implements Tank {
         return false;
     }
 
-    public class Cell {
+    private class Cell {
         public int x, y;
         boolean isItWall = true;
         boolean marked = false;
@@ -367,6 +404,32 @@ public abstract class AbstractTank implements Tank {
             }
         }
         return true;
+    }
+
+    private Action cleanPerimeter(){
+        if(!isDefencePerimeterClear() && !(getX()/64==2 && getY()/64 ==6) && !movementPossibility){
+            return forcedMoveToQuadrant(2, 6);
+        }
+        movementPossibility = true;
+        turn(Direction.RIGHT);
+        if(!isDefencePerimeterClear() && !checkNextQuad(4)){
+            return Action.FIRE;
+        }
+        if(!isDefencePerimeterClear() && !(getX()/64==6 && getY()/64 ==6)) {
+            return moveToQuadrant(6, 6);
+        }
+        turn(Direction.DOWN);
+        if(!isDefencePerimeterClear() && !checkNextQuad(2)){
+            return Action.FIRE;
+        }
+        return moveRandom();
+    }
+
+    public Action eagleDefence(){
+        if(isDefencePerimeterClear()){
+            return enemyHunt();
+        }
+        return cleanPerimeter();
     }
 
     public Action enemyHunt() {
