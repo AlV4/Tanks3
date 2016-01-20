@@ -4,6 +4,7 @@ import com.midgardabc.day7.tanks.Direction;
 import com.midgardabc.day7.tanks.bf.*;
 
 import java.awt.*;
+import java.awt.image.ImageObserver;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
@@ -29,6 +30,12 @@ public abstract class AbstractTank implements Tank {
     private boolean movementPossibility;
     private boolean endOfMovement;
     protected Cell[][] roadMap;
+
+    protected Image imageUp;
+    protected Image imageDown;
+    protected Image imageLeft;
+    protected Image imageRight;
+
 
     protected Color tankColor;
     protected Color towerColor;
@@ -56,6 +63,7 @@ public abstract class AbstractTank implements Tank {
         this.direction = direction;
         this.destroyed = false;
         roadMap = roadMapCreator();
+
     }
 
     public void turn(Direction direction) {
@@ -87,20 +95,57 @@ public abstract class AbstractTank implements Tank {
 
     public void draw(Graphics g) {
         if (!destroyed) {
-            g.setColor(tankColor);
-            g.fillRect(this.getX(), this.getY(), 64, 64);
-
-            g.setColor(towerColor);
-            if (this.getDirection() == Direction.UP) {
-                g.fillRect(getX() + 27, getY() - 10, barrelWidth, barrelHeight);
-            } else if (this.getDirection() == Direction.DOWN) {
-                g.fillRect(getX() + 27, getY() + 34, barrelWidth, barrelHeight);
-            } else if (this.getDirection() == Direction.LEFT) {
-                g.fillRect(getX() - 10, getY() + 27, barrelHeight, barrelWidth);
+            if (imageLeft != null && imageRight != null
+                    && imageUp != null && imageDown != null) {
+                if (this.getDirection() == Direction.UP) {
+                    g.drawImage(imageUp, x, y, new ImageObserver() {
+                        @Override
+                        public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+                            return false;
+                        }
+                    });
+                }
+                if (this.getDirection() == Direction.DOWN) {
+                    g.drawImage(imageDown, x, y, new ImageObserver() {
+                        @Override
+                        public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+                            return false;
+                        }
+                    });
+                }
+                if (this.getDirection() == Direction.LEFT) {
+                    g.drawImage(imageLeft, x, y, new ImageObserver() {
+                        @Override
+                        public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+                            return false;
+                        }
+                    });
+                }
+                if (this.getDirection() == Direction.RIGHT) {
+                    g.drawImage(imageRight, x, y, new ImageObserver() {
+                        @Override
+                        public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+                            return false;
+                        }
+                    });
+                }
             } else {
-                g.fillRect(getX() + 34, getY() + 27, barrelHeight, barrelWidth);
+                g.setColor(tankColor);
+                g.fillRect(this.getX(), this.getY(), 64, 64);
+
+                g.setColor(towerColor);
+
+                if (this.getDirection() == Direction.UP) {
+                    g.fillRect(getX() + 27, getY() - 10, barrelWidth, barrelHeight);
+                } else if (this.getDirection() == Direction.DOWN) {
+                    g.fillRect(getX() + 27, getY() + 34, barrelWidth, barrelHeight);
+                } else if (this.getDirection() == Direction.LEFT) {
+                    g.fillRect(getX() - 10, getY() + 27, barrelHeight, barrelWidth);
+                } else {
+                    g.fillRect(getX() + 34, getY() + 27, barrelHeight, barrelWidth);
+                }
+                g.fillOval(getX() + 12, getY() + 12, 40, 40);
             }
-            g.fillOval(getX() + 12, getY() + 12, 40, 40);
         }
     }
 
