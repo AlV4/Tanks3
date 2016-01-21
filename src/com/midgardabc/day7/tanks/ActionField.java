@@ -83,8 +83,8 @@ public class ActionField extends JPanel {
 				h--;
 			}
 			BFObject bfobject = battleField.scanQuadrant(v, h);
-
-			if ((!(bfobject instanceof Blank) || bfobject instanceof Water) && !bfobject.isDestroyed() || h == tank.getEnemyPosition()[0] && v == tank.getEnemyPosition()[1]) {
+//|| bfobject instanceof Water
+			if ((!(bfobject instanceof Blank) ) && !bfobject.isDestroyed()&& !(bfobject instanceof Water)|| h == tank.getEnemyPosition()[0] && v == tank.getEnemyPosition()[1]) {
 				System.out.println("[illegal move] direction: " + direction
 						+ " tankX: " + tank.getX() + ", tankY: " + tank.getY() + " " + tank.toString());
 				return false;
@@ -205,7 +205,8 @@ public class ActionField extends JPanel {
 
 		JFrame frame = new JFrame("BATTLE FIELD, DAY 7");
 		frame.setLocation(750, 150);
-		frame.setMinimumSize(new Dimension(battleField.getBfWidth()+ 16, battleField.getBfHeight() + 38));
+		frame.setMinimumSize(new Dimension(battleField.getBfWidth()+ 7, battleField.getBfHeight() + 29));
+		frame.setResizable(false);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.getContentPane().add(this);
 		frame.pack();

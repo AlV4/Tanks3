@@ -43,7 +43,6 @@ public class BT7 extends AbstractTank {
 	public Action setUp() {
 //		return moveRandomSilence();
 		return enemyHunt();
-//		return forcedMoveToQuadrant(0, 8);
 //        return eagleHunt();
 //		return moveRandom();
 //		return clean();

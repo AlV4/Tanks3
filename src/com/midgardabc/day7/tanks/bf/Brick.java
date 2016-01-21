@@ -22,6 +22,7 @@ public class Brick extends SimpleBFObject implements Destroyable{
 	@Override
 	public void draw(Graphics g) {
 		if(brick != null && !this.isDestroyed()){
+
 			g.drawImage(brick, this.getX(), this.getY(), new ImageObserver() {
 				@Override
 				public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {

@@ -95,8 +95,8 @@ public abstract class AbstractTank implements Tank {
 
     public void draw(Graphics g) {
         if (!destroyed) {
-            if (imageLeft != null && imageRight != null
-                    && imageUp != null && imageDown != null) {
+            Graphics2D g2 = (Graphics2D)g;
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f));
                 if (this.getDirection() == Direction.UP) {
                     g.drawImage(imageUp, x, y, new ImageObserver() {
                         @Override
@@ -129,23 +129,7 @@ public abstract class AbstractTank implements Tank {
                         }
                     });
                 }
-            } else {
-                g.setColor(tankColor);
-                g.fillRect(this.getX(), this.getY(), 64, 64);
 
-                g.setColor(towerColor);
-
-                if (this.getDirection() == Direction.UP) {
-                    g.fillRect(getX() + 27, getY() - 10, barrelWidth, barrelHeight);
-                } else if (this.getDirection() == Direction.DOWN) {
-                    g.fillRect(getX() + 27, getY() + 34, barrelWidth, barrelHeight);
-                } else if (this.getDirection() == Direction.LEFT) {
-                    g.fillRect(getX() - 10, getY() + 27, barrelHeight, barrelWidth);
-                } else {
-                    g.fillRect(getX() + 34, getY() + 27, barrelHeight, barrelWidth);
-                }
-                g.fillOval(getX() + 12, getY() + 12, 40, 40);
-            }
         }
     }
 
