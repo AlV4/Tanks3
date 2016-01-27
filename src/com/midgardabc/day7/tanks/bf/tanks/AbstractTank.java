@@ -95,8 +95,7 @@ public abstract class AbstractTank implements Tank {
 
     public void draw(Graphics g) {
         if (!destroyed) {
-            Graphics2D g2 = (Graphics2D)g;
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f));
+
                 if (this.getDirection() == Direction.UP) {
                     g.drawImage(imageUp, x, y, new ImageObserver() {
                         @Override

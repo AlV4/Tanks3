@@ -22,7 +22,8 @@ public class Water extends SimpleBFObject {
     @Override
     public void draw(Graphics g) {
         Graphics2D g2 = (Graphics2D)g;
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f));
+        Composite was = g2.getComposite();
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
             g.drawImage(water, this.getX(), this.getY(), new ImageObserver() {
                 @Override
                 public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
@@ -30,7 +31,7 @@ public class Water extends SimpleBFObject {
                 }
 
             });
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+        g2.setComposite(was);
 
     }
 }

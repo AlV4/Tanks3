@@ -23,6 +23,9 @@ public class ActionField extends JPanel {
 	private Tank defender;
 	private Tank aggressor;
 	private Bullet bullet;
+	private boolean isChooserVisible;
+	private ImageIcon tank1;
+	private ImageIcon tank2;
 
 	/**
 	 * Write your code here.
@@ -84,7 +87,7 @@ public class ActionField extends JPanel {
 			}
 			BFObject bfobject = battleField.scanQuadrant(v, h);
 //|| bfobject instanceof Water
-			if ((!(bfobject instanceof Blank) ) && !bfobject.isDestroyed()&& !(bfobject instanceof Water)|| h == tank.getEnemyPosition()[0] && v == tank.getEnemyPosition()[1]) {
+			if ((!(bfobject instanceof Blank) ) && !bfobject.isDestroyed()|| h == tank.getEnemyPosition()[0] && v == tank.getEnemyPosition()[1]) {
 				System.out.println("[illegal move] direction: " + direction
 						+ " tankX: " + tank.getX() + ", tankY: " + tank.getY() + " " + tank.toString());
 				return false;
@@ -204,13 +207,50 @@ public class ActionField extends JPanel {
 		bullet = new Bullet(-100, -100, Direction.DOWN, new T34(battleField));
 
 		JFrame frame = new JFrame("BATTLE FIELD, DAY 7");
-		frame.setLocation(750, 150);
 		frame.setMinimumSize(new Dimension(battleField.getBfWidth()+ 7, battleField.getBfHeight() + 29));
+		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.getContentPane().add(this);
 		frame.pack();
 		frame.setVisible(true);
+
+		JFrame choozer = new JFrame("BATTLE FIELD, DAY 7");
+		choozer.setMinimumSize(new Dimension(battleField.getBfWidth()+ 7, battleField.getBfHeight() + 29));
+		choozer.setLocationRelativeTo(null);
+		choozer.setResizable(false);
+		choozer.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		choozer.getContentPane().add(chooserCreator());
+		choozer.pack();
+		choozer.setVisible(true);
+
+	}
+
+	private JPanel chooserCreator(){
+			tank1 = new ImageIcon("Tank_Enemy_up.png");
+			tank2 = new ImageIcon("Tiger_up.png");
+		JPanel panel = new JPanel(new GridBagLayout());
+		JLabel text = new JLabel("Choose your attack tank model!");
+		text.setFont(new Font(Font.MONOSPACED, Font.BOLD, 28));
+		text.setForeground(new Color(0, 82, 255));
+		panel.add(text, new GridBagConstraints(
+				0, 0, 2, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		JButton model1 = new JButton("EASY");
+		model1.setIcon(tank1);
+		model1.setVerticalTextPosition(SwingConstants.BOTTOM);
+		model1.setHorizontalTextPosition(SwingConstants.CENTER);
+
+		JButton model2 = new JButton("HARD");
+		model2.setIcon(tank2);
+		model2.setVerticalTextPosition(SwingConstants.BOTTOM);
+		model2.setHorizontalTextPosition(SwingConstants.CENTER);
+
+		panel.add(model1, new GridBagConstraints(
+				0, 1, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		panel.add(model2, new GridBagConstraints(
+				1, 1, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+
+		return panel;
 	}
 
 	@Override
