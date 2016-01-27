@@ -8,4 +8,9 @@ public class Blank extends SimpleBFObject {
 		super(x, y);
 		color = new Color(180, 180, 180);
 	}
+
+    @Override
+    public void recover() {
+
+    }
 }

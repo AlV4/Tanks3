@@ -35,4 +35,8 @@ public class Rock extends SimpleBFObject implements Destroyable{
 		}
 	}
 
+    @Override
+    public void recover() {
+
+    }
 }

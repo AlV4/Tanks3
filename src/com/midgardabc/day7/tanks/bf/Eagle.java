@@ -33,4 +33,9 @@ public class Eagle extends SimpleBFObject implements Destroyable{
 			g.fillRect(this.getX(), this.getY(), 64, 64);
 		}
 	}
+
+    @Override
+    public void recover() {
+
+    }
 }

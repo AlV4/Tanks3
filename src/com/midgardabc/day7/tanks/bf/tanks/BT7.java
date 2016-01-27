@@ -9,10 +9,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class BT7 extends AbstractTank {
-	protected static final String nameImageUp = "Tiger_up.png";
-	protected static final String nameImageDown = "Tiger_down.png";
-	protected static final String nameImageLeft = "Tiger_left.png";
-	protected static final String nameImageRight = "Tiger_right.png";
+	protected static final String nameImageUp = "Tank_Enemy_up.png";
+	protected static final String nameImageDown = "Tank_Enemy_down.png";
+	protected static final String nameImageLeft = "Tank_Enemy_left.png";
+	protected static final String nameImageRight = "Tank_Enemy_right.png";
 	
 	public BT7(BattleField bf) {
 		super(bf);

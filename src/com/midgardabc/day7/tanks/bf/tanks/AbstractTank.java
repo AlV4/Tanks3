@@ -141,6 +141,10 @@ public abstract class AbstractTank implements Tank {
         destroyed = true;
     }
 
+    public void recover(){
+        destroyed = false;
+    }
+
     private void turn(int v, int h) {
         int coordX = v * 64;
         int coordY = h * 64;
