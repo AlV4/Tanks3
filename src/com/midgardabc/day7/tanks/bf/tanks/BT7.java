@@ -36,10 +36,7 @@ public class BT7 extends AbstractTank {
 		}
 	}
 
-
-
-
-	@Override
+    @Override
 	public Action setUp() {
 //		return moveRandomSilence();
 		return enemyHunt();

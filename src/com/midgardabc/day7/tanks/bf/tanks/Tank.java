@@ -29,4 +29,8 @@ public interface Tank extends Drawable, Destroyable {
 	public void setEnemyTank(Tank tank);
 
 	public int[] getEnemyPosition();
+
+    public void resetPosition();
+
+    public void recover();
 }

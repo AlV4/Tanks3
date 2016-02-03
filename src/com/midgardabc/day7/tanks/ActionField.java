@@ -8,6 +8,9 @@ import com.midgardabc.day7.tanks.bf.tanks.Action;
 import com.midgardabc.day7.tanks.bf.tanks.*;
 
 import javax.swing.*;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,20 +23,28 @@ import java.awt.event.ActionListener;
 public class ActionField extends JPanel {
 
     private boolean COLORDED_MODE = false;
+    public boolean startTheGame;
 
     private BattleField battleField;
     private Tank defender;
     private Tank aggressor;
     private Bullet bullet;
-    private boolean isChooserVisible = true;
     private ImageIcon tank1;
     private ImageIcon tank2;
+    private Tank tiger;
+    private Tank bt7;
     JFrame frame;
+    JFrame choozer;
+    private JTable table;
+    private String [] names = {"Players", "WIN", "LOSE", "Eagle destructions"};
+    private Object[][] scoreTable = {
+            {"Tiger", 0, 0, 0},
+            {"BT7", 0, 0, 0},
+            {"T34", 0, 0, 0}
+    };
 
-    /**
-     * Write your code here.
-     */
     void runTheGame() throws Exception {
+
         while (true) {
             if (!aggressor.isDestroyed() && !defender.isDestroyed()) {
                 processAction(aggressor.setUp(), aggressor);
@@ -41,12 +52,25 @@ public class ActionField extends JPanel {
             if (!aggressor.isDestroyed() && !defender.isDestroyed()) {
                 processAction(defender.setUp(), defender);
             }
-            if (aggressor.isDestroyed() || defender.isDestroyed()){
+            if (aggressor.isDestroyed() || defender.isDestroyed() || battleField.getEagleQuadrant() == null){
+
+//                NEED TO FINISH HERE
+                scoreTable[0][3] = 1;
+                table.repaint();
+                Thread.sleep(1000);
                 frame.setVisible(false);
-                aggressor.recover();
-                defender.recover();
+                startTheGame = false;
+                return;
             }
         }
+    }
+
+    public void restartTheGame(){
+        battleField = new BattleField();
+        defender.resetPosition();
+        defender.recover();
+        aggressor.resetPosition();
+        aggressor.recover();
     }
 
     private void processAction(Action a, Tank t) throws Exception {
@@ -205,24 +229,25 @@ public class ActionField extends JPanel {
         battleField = new BattleField();
         defender = new T34(battleField);
 
-        String location = battleField.getAggressorLocation();
-        aggressor = new Tiger(battleField,
-                Integer.parseInt(location.split("_")[1]), Integer.parseInt(location.split("_")[0]), Direction.DOWN);
-        Tank aggressor2;
+        int[] location = battleField.getAggressorLocation();
+        bt7 = new BT7(battleField, 0, 0, Direction.DOWN);
+        bt7.setEnemyTank(defender);
+        tiger = new Tiger(battleField, location[1],location[0], Direction.DOWN);
+        tiger.setEnemyTank(defender);
+        aggressor = bt7;
 
         defender.setEnemyTank(aggressor);
-        aggressor.setEnemyTank(defender);
 
         bullet = new Bullet(-100, -100, Direction.DOWN, new T34(battleField));
 
-        JFrame choozer = new JFrame("BATTLE FIELD, DAY 7");
+        choozer = new JFrame("BATTLE FIELD, DAY 7");
         choozer.setMinimumSize(new Dimension(battleField.getBfWidth() + 7, battleField.getBfHeight() + 29));
         choozer.setLocationRelativeTo(null);
         choozer.setResizable(false);
         choozer.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         choozer.getContentPane().add(chooserCreator());
         choozer.pack();
-        choozer.setVisible(isChooserVisible);
+        choozer.setVisible(true);
 
         frame = new JFrame("BATTLE FIELD, DAY 7");
         frame.setMinimumSize(new Dimension(battleField.getBfWidth() + 7, battleField.getBfHeight() + 29));
@@ -232,14 +257,9 @@ public class ActionField extends JPanel {
         frame.getContentPane().add(this);
         frame.pack();
         frame.setVisible(false);
-
-
-
-
     }
 
     private JPanel chooserCreator() {
-        final String location = battleField.getAggressorLocation();
         tank1 = new ImageIcon("Tank_Enemy_up.png");
         tank2 = new ImageIcon("Tiger_up.png");
         JPanel panel = new JPanel(new GridBagLayout());
@@ -255,11 +275,12 @@ public class ActionField extends JPanel {
         model1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.setVisible(true);
-                aggressor = new BT7(battleField,
-                        Integer.parseInt(location.split("_")[1]), Integer.parseInt(location.split("_")[0]), Direction.DOWN);
-                aggressor.setEnemyTank(defender);
+
+                aggressor = bt7;
                 defender.setEnemyTank(aggressor);
+                restartTheGame();
+                startTheGame = true;
+                frame.setVisible(true);
 
             }
         });
@@ -272,17 +293,77 @@ public class ActionField extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.setVisible(true);
-                aggressor = new Tiger(battleField,
-                        Integer.parseInt(location.split("_")[1]), Integer.parseInt(location.split("_")[0]), Direction.DOWN);
-                aggressor.setEnemyTank(defender);
+                aggressor = tiger;
                 defender.setEnemyTank(aggressor);
+                restartTheGame();
+                startTheGame = true;
             }
         });
 
         panel.add(model1, new GridBagConstraints(
-                0, 1, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+                0, 1, 1, 1, 1, 1, GridBagConstraints.SOUTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
         panel.add(model2, new GridBagConstraints(
-                1, 1, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+                1, 1, 1, 1, 1, 1, GridBagConstraints.SOUTH, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+
+        table = new JTable(new TableModel() {
+            @Override
+            public int getRowCount() {
+                return 3;
+            }
+
+            @Override
+            public int getColumnCount() {
+                return 4;
+            }
+
+            @Override
+            public String getColumnName(int columnIndex) {
+
+                return names[columnIndex];
+            }
+
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                return scoreTable.getClass();
+            }
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return false;
+            }
+
+            @Override
+            public Object getValueAt(int rowIndex, int columnIndex) {
+                return scoreTable[rowIndex][columnIndex];
+            }
+
+            @Override
+            public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+
+            }
+
+            @Override
+            public void addTableModelListener(TableModelListener l) {
+
+            }
+
+            @Override
+            public void removeTableModelListener(TableModelListener l) {
+
+            }
+        });
+        table.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
+        table.setGridColor(Color.white);
+        table.setRowHeight(35);
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(DefaultTableCellRenderer.CENTER);
+        for(String column : names){
+            table.getColumn(column).setCellRenderer(centerRenderer);
+        }
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setPreferredSize(new Dimension(100, 200));
+        panel.add(scrollPane, new GridBagConstraints(
+                0, 2, 2, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 
         return panel;
     }

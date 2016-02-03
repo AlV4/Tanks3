@@ -14,7 +14,7 @@ public class T34 extends AbstractTank {
     protected static final String nameImageLeft = "Tank_Player_left.png";
     protected static final String nameImageRight = "Tank_Player_right.png";
     public T34(BattleField bf) {
-        super(bf, 0, 512, Direction.RIGHT);
+        super(bf, 0, 512, Direction.UP);
         tankColor = new Color(0, 136, 255);
         towerColor = new Color(248, 255, 60);
         try{
@@ -41,14 +41,20 @@ public class T34 extends AbstractTank {
 
     @Override
     public Action setUp() {
-        return eagleDefence();
-//        return enemyHunt();
+//        return eagleDefence();
+        return enemyHunt();
 //            return eagleHunt();
 //       return moveRandomSilence();
 //        return moveRandom();
 //        return clean();
 //        return Action.NONE;
 
+    }
+
+    @Override
+    public void resetPosition() {
+        this.x = 64;
+        this.y = 512;
     }
 
     @Override

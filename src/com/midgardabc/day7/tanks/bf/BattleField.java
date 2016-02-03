@@ -13,11 +13,11 @@ public class BattleField implements Drawable {
 	private int bfHeight = 576;
 
 	private String[][] battleFieldTemplate = {
-			{" ", "B", "B", "B", "B", "B", "B", "B", " "},
-	{" ", " ", " ", " ", "B", " ", " ", "B", "B"},
-	{"B", " ", " ", " ", " ", " ", " ", "B", "B"},
+    {" ", "B", "B", "B", "B", "B", "B", "B", " "},
+	{" ", " ", " ", " ", "B", " ", " ", " ", " "},
+	{"B", " ", " ", " ", " ", " ", " ", " ", "B"},
 	{"B", " ", " ", "B", "B", "B", "B", "B", "B"},
-	{"B", "B", "B", "B", " ", "B", "B", "B", "B"},
+	{"B", "B", " ", "B", " ", "B", "B", "B", "B"},
 	{" ", "W", "W", "W", "W", "W", "W", "B", "B"},
 	{" ", " ", " ", " ", "B", "B", " ", "B", "B"},
 	{" ", " ", " ", "R", "R", "R", " ", " ", " "},
@@ -104,8 +104,8 @@ public class BattleField implements Drawable {
 		return battleField[v][h];
 	}
 
-	public String getAggressorLocation() {
-		return "0_512";
+	public int [] getAggressorLocation() {
+		return new int [] {0, 512};
 	}
 
 	public int[] getEagleQuadrant(){

@@ -19,10 +19,13 @@ public abstract class AbstractTank implements Tank {
     private Direction direction;
 
     // current position on BF
-    private int x;
-    private int y;
+    protected int x;
+    protected int y;
 
-    private boolean destroyed;
+    public int wins;
+    public int loses;
+
+    private boolean destroyed = false;
 
     private BattleField bf;
 
@@ -139,10 +142,6 @@ public abstract class AbstractTank implements Tank {
 
     public void destroy() {
         destroyed = true;
-    }
-
-    public void recover(){
-        destroyed = false;
     }
 
     private void turn(int v, int h) {
@@ -659,6 +658,11 @@ public abstract class AbstractTank implements Tank {
         this.direction = direction;
     }
 
+    public void resetPosition(){
+        x = bf.getAggressorLocation()[1];
+        y = bf.getAggressorLocation()[0];
+    }
+
     public int getX() {
         return x;
     }
@@ -690,5 +694,9 @@ public abstract class AbstractTank implements Tank {
     @Override
     public int getMovePath() {
         return movePath;
+    }
+
+    public void recover(){
+        destroyed = false;
     }
 }

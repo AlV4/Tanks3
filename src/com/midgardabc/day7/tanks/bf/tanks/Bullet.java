@@ -51,11 +51,6 @@ public class Bullet implements Drawable, Destroyable {
 		return destroyed;
 	}
 
-    @Override
-    public void recover() {
-
-    }
-
     public int getSpeed() {
 		return speed;
 	}

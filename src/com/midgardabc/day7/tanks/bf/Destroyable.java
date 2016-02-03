@@ -6,5 +6,4 @@ public interface Destroyable {
 	
 	public boolean isDestroyed();
 
-    void recover();
 }

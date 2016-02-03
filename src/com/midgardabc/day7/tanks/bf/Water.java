@@ -34,9 +34,4 @@ public class Water extends SimpleBFObject {
         g2.setComposite(was);
 
     }
-
-    @Override
-    public void recover() {
-
-    }
 }

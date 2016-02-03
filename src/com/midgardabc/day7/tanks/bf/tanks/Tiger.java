@@ -47,10 +47,11 @@ public class Tiger extends AbstractTank {
 			super.destroy();
 		}
 	}
-	
-	@Override
+
+    @Override
 	public Action setUp() {
-		return moveRandom();
+//		return moveRandom();
+        return enemyHunt();
 	}
 	@Override
 	public String toString() {
