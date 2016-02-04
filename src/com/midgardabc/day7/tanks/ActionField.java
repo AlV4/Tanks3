@@ -36,11 +36,11 @@ public class ActionField extends JPanel {
     JFrame frame;
     JFrame choozer;
     private JTable table;
-    private String [] names = {"Players", "WIN", "LOSE", "Eagle destructions"};
+    private String [] names = {"Players", "WIN", "LOSE"};
     private Object[][] scoreTable = {
-            {"Tiger", 0, 0, 0},
-            {"BT7", 0, 0, 0},
-            {"T34", 0, 0, 0}
+            {"Aggressor", 0, 0 },
+            {"Defender", 0, 0},
+            {"Eagle down", "", 0}
     };
 
     void runTheGame() throws Exception {
@@ -53,9 +53,38 @@ public class ActionField extends JPanel {
                 processAction(defender.setUp(), defender);
             }
             if (aggressor.isDestroyed() || defender.isDestroyed() || battleField.getEagleQuadrant() == null){
+                if(aggressor.isDestroyed()){
+                    int point = (int) scoreTable[0][2];
+                    point++;
+                    scoreTable[0][2] = point;
 
-//                NEED TO FINISH HERE
-                scoreTable[0][3] = 1;
+                    point = (int) scoreTable[1][1];
+                    point++;
+                    scoreTable[1][1] = point;
+
+                } else if(defender.isDestroyed()){
+                    int point = (int) scoreTable[0][1];
+                    point++;
+                    scoreTable[0][1] = point;
+
+                    point = (int) scoreTable[1][2];
+                    point++;
+                    scoreTable[1][2] = point;
+
+                }else if (battleField.getEagleQuadrant() == null){
+                    int point = (int) scoreTable[0][1];
+                    point++;
+                    scoreTable[0][1] = point;
+
+                    point = (int) scoreTable[1][2];
+                    point++;
+                    scoreTable[1][2] = point;
+                    point = (int) scoreTable[2][2];
+                    point++;
+                    scoreTable[2][2] = point;
+
+                }
+
                 table.repaint();
                 Thread.sleep(1000);
                 frame.setVisible(false);
@@ -313,7 +342,7 @@ public class ActionField extends JPanel {
 
             @Override
             public int getColumnCount() {
-                return 4;
+                return 3;
             }
 
             @Override
